@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CookMate 48 小时实体 Demo 方案：RDK X5、固定状态屏、单轴相机云台、语音与实体键。包含可打印结构、接线、BOM 与现场验收。">
+  <meta name="theme-color" content="#f4eee5">
+  <title>CookMate · 48 小时实体 Demo</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2320282d'/%3E%3Crect x='14' y='18' width='36' height='23' rx='5' fill='%23f4b978'/%3E%3Ccircle cx='46' cy='48' r='5' fill='%23d66a3b'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+
+  <header class="site-header" data-elevated="false">
+    <a class="brand" href="#top" aria-label="CookMate 首页">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i></span>
+      <span>CookMate</span>
+    </a>
+    <nav aria-label="主导航">
+      <a href="#hardware">硬件</a>
+      <a href="#interaction">交互</a>
+      <a href="#wiring">接线</a>
+      <a href="#build48">48H</a>
+      <a href="#submission">提交</a>
+    </nav>
+    <span class="global-status">Design package ready</span>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <div class="kicker">
+          <span>DDC 2026</span>
+          <span>RDK X5</span>
+          <span>外露工程样机</span>
+        </div>
+        <h1>48 小时，<br>做一台<em>能摸到</em>的<br>烹饪状态终端。</h1>
+        <p class="hero-lede">固定屏幕面向用户，单轴相机头在切配区与锅具区之间转动。用户说“继续、重复、暂停”，语音失败就按实体键；RDK X5 在本地完成状态、计时和失败降级。</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#interaction">操作状态流</a>
+          <a class="button button-ghost" href="assets/CookMate_48h_Hardware_Kit.zip" download>下载硬件包</a>
+        </div>
+        <div class="status-line" aria-label="当前项目证据状态">
+          <span><i class="ok"></i>设计包可用</span>
+          <span><i class="ok"></i>状态机模拟可运行</span>
+          <span><i class="pending"></i>RDK 组合未实机</span>
+          <span><i class="pending"></i>实体未装配</span>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="image-frame">
+          <img src="assets/engineering_prototype.png" alt="CookMate 外露工程样机设计图：固定屏幕、三键、独立相机云台和 RDK X5 底座" width="1800" height="1050" fetchpriority="high">
+        </div>
+        <div class="floating-state">
+          <span class="state-label">48H BUILD TARGET</span>
+          <strong>固定屏 + 单轴相机头</strong>
+          <span class="state-timer">STEP 2 / 6</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="statement">
+      <p>不是自动炒菜机。不是会说话的电子菜谱。</p>
+      <h2>它保存做饭现场的状态，<br>并把每次 AI 失败变成可继续的按钮。</h2>
+    </section>
+
+    <section class="section hardware" id="hardware">
+      <div class="section-heading">
+        <span class="section-index">01 / 实体</span>
+        <h2>先搭工程样机，<br>再考虑封闭外壳。</h2>
+        <p>整块屏幕转头会让 HDMI 线、重量和重心都变复杂。V2 改成固定屏与独立相机云台，48 小时更容易打印、接线和维修。</p>
+      </div>
+
+      <div class="hardware-layout">
+        <figure class="hardware-figure">
+          <img src="assets/exploded_prototype.png" alt="CookMate 拆解示意：底座托盘、RDK X5、固定屏幕、USB 三键、2020 立柱和舵机相机头" width="1800" height="1120">
+          <figcaption>外露式装配示意。STL 是可打印快速件，实际孔位需按到手元件复测。</figcaption>
+        </figure>
+        <div class="hardware-specs">
+          <div><span>主控</span><strong>RDK X5</strong><small>8GB / 本地闭环</small></div>
+          <div><span>显示</span><strong>5.5″</strong><small>固定 15° 斜托</small></div>
+          <div><span>视觉</span><strong>1 Axis</strong><small>相机头两区切换</small></div>
+          <div><span>输入</span><strong>3 Keys</strong><small>USB HID 降级</small></div>
+        </div>
+      </div>
+
+      <div class="build-evidence">
+        <article>
+          <span>CAD</span>
+          <h3>5 个快速打印件</h3>
+          <p>底座托盘、屏幕框、立柱夹、舵机/相机座和三键面板。</p>
+        </article>
+        <article>
+          <span>1:1</span>
+          <h3>纸模板先试装</h3>
+          <p>A4 100% 打印，在动孔之前确认屏幕、X5、按键和立柱位置。</p>
+        </article>
+        <article>
+          <span>RDK</span>
+          <h3>烟测脚本</h3>
+          <p>环境、相机、声卡和受限 PWM 舵机分别验证，不靠网页冒充。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section interaction" id="interaction">
+      <div class="section-heading compact">
+        <span class="section-index">02 / 现场动作</span>
+        <h2>评委能摸到、听到、看到什么。</h2>
+        <p>下面是状态机模拟，用来预演屏幕行为；机器人本体仍需真机装配与测试。</p>
+      </div>
+
+      <div class="demo-shell">
+        <div class="demo-screen">
+          <div class="demo-topbar">
+            <span>CookMate / UI SIMULATION</span>
+            <span class="pulse-label"><i></i> LOCAL STATE</span>
+          </div>
+          <div class="demo-main">
+            <div class="step-block" aria-live="polite">
+              <span id="step-label">第 2 步 / 6</span>
+              <h3 id="step-title">切番茄</h3>
+              <p id="step-prompt">把番茄切成八瓣，切完说继续。</p>
+            </div>
+            <div class="timer-dial" id="timer-ring" style="--progress: 100">
+              <span id="timer-value">02:00</span>
+            </div>
+          </div>
+          <div class="status-strip">
+            <span id="camera-state">相机：切配区</span>
+            <span id="audio-state">麦克风：听</span>
+            <span id="pause-state">运行中</span>
+          </div>
+          <div class="progress-track" aria-hidden="true"><span id="progress-bar" style="width: 33%"></span></div>
+          <p class="demo-caption" id="demo-caption" aria-live="polite">我在等你说“继续”。</p>
+        </div>
+
+        <div class="demo-controls" aria-label="交互模拟控制">
+          <p class="controls-label">按真实实体键对应的动作</p>
+          <button type="button" data-action="next">继续</button>
+          <button type="button" data-action="repeat">重复</button>
+          <button type="button" data-action="pause">暂停</button>
+          <button type="button" data-action="remaining">还有多久</button>
+          <button type="button" data-action="prep-zone" class="control-wide">手进入切配区</button>
+          <button type="button" data-action="pan-zone" class="control-wide">手进入锅具区</button>
+          <button type="button" data-action="vision" class="control-wide">手离开操作区</button>
+          <button type="button" data-action="reset" class="control-wide control-quiet">重新开始</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wiring-section" id="wiring">
+      <div class="section-heading">
+        <span class="section-index">03 / 接线</span>
+        <h2>USB 能解决的先不碰 GPIO，<br>只有云台使用 PWM。</h2>
+        <p>这种分配能让 48 小时联调更可控。舵机使用独立 5V/2A 电源和 X5 共地，实体键作为 USB HID 输入。</p>
+      </div>
+      <figure class="wiring-figure">
+        <img src="assets/wiring.png" alt="CookMate 接线图：RDK X5 供电、HDMI 屏幕、USB 相机、USB 声卡、USB HID 三键、独立供电舵机和 PWM 信号" width="1800" height="1100" loading="lazy">
+      </figure>
+      <div class="safety-row">
+        <p><strong>X5</strong> 5V/5A 独立供电</p>
+        <p><strong>屏幕</strong> 按模块规格独立供电</p>
+        <p><strong>舵机</strong> 只接 Pin 33 信号，不从板上取电</p>
+        <p><strong>所有地</strong> 共地但电源隔离</p>
+      </div>
+    </section>
+
+    <section class="section build48" id="build48">
+      <div class="section-heading compact">
+        <span class="section-index">04 / 48 小时</span>
+        <h2>先形成三个可验收证据。</h2>
+        <p>没有这三项，不开始做完整外观外壳。</p>
+      </div>
+      <div class="timeline">
+        <article>
+          <span>H4</span>
+          <h3>桌面粉测</h3>
+          <p>X5、屏幕、相机、声卡、三键、舵机分别可用；真实设备节点和照片留证。</p>
+        </article>
+        <article>
+          <span>H12</span>
+          <h3>实体按钮闭环</h3>
+          <p>三键完成六步菜谱；暂停冻结计时；断电重启可恢复。</p>
+        </article>
+        <article>
+          <span>H24</span>
+          <h3>语音或视觉至少一项</h3>
+          <p>语音失败切按钮；视觉不确定不推进；相机可覆盖两个操作区。</p>
+        </article>
+        <article>
+          <span>H30</span>
+          <h3>连续三次验收</h3>
+          <p>不通过就关闭视觉或舵机，保留屏幕、按钮、计时和本地状态。</p>
+        </article>
+      </div>
+      <div class="flow-line" aria-label="90 秒现场演示">
+        <span>上电</span><i></i><span>说/按继续</span><i></i><span>屏幕与计时同步</span><i></i><span>相机转区</span><i></i><span>遮相机 / 噪声</span><i></i><span>按钮完成</span>
+      </div>
+    </section>
+
+    <section class="section limits">
+      <div class="limits-copy">
+        <span class="section-index">05 / 边界</span>
+        <h2>能上桌，不等于能代替厨师。</h2>
+        <p>设备不控火、不拿刀、不碰食材，也不根据普通摄像头判断熟度或食品安全。视觉只判断手部在哪个固定区域，关键步骤必须由用户确认。</p>
+        <p>这并非功能缩水，而是保证两位 AI 工程师、两位硬件/产品成员能把时间和预算放在一个能重复的闭环上。</p>
+      </div>
+      <div class="limit-list">
+        <p><strong>不控火</strong><span>用户操作炉具</span></p>
+        <p><strong>不判熟度</strong><span>普通 RGB 信息不足</span></p>
+        <p><strong>不自动推进</strong><span>视觉只提示</span></p>
+        <p><strong>不假装实机</strong><span>设计、模拟、实体分开标注</span></p>
+      </div>
+    </section>
+
+    <section class="section submission" id="submission">
+      <div class="submission-copy">
+        <span class="section-index">06 / 报名材料</span>
+        <h2>报名表先写实体闭环，链接只做补充。</h2>
+        <p>表单正文控制在约 800 字：做什么实体、评委操作什么、RDK 负责什么、AI 不做什么、失败如何降级。附件使用一页方案卡、硬件仓库或项目页，而不是把 12 份文档全部塞进链接。</p>
+        <div class="submission-actions">
+          <a class="button button-primary" href="assets/application_build_card.png" target="_blank" rel="noopener">查看一页方案卡</a>
+          <a class="button button-ghost" href="assets/CookMate_DDC2026_Application_Kit.zip" download>下载报名材料包</a>
+        </div>
+      </div>
+      <div class="submission-grid">
+        <div><span>01</span><strong>文字</strong><p>800 字实体闭环</p></div>
+        <div><span>02</span><strong>画面</strong><p>一页硬件方案卡</p></div>
+        <div><span>03</span><strong>可检查</strong><p>STL / BOM / 接线 / 脚本</p></div>
+        <div><span>04</span><strong>公开链接</strong><p>项目页或 GitHub/Gitee</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>CookMate</strong>
+      <span>DDC 2026 实体工程方案</span>
+    </div>
+    <p>Design package ready · Hardware not yet assembled</p>
+  </footer>
+</body>
+</html>

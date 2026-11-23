@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101310">
+<meta name="description" content="Ray 的 DDC 2026 项目作品集：CookMate、FridgeMind、味衡 AI、Frame、花朵手势交互与 AIGC 视觉。">
+<title>Ray · 项目作品集｜DDC 2026</title>
+<style>
+  :root{
+    --bg:#101310; --bg2:#171a17; --panel:#1c201c; --line:rgba(235,245,235,.12);
+    --ink:#eef3ed; --mut:#9aa79a; --accent:#c8ff5e; --accent2:#6ee7ff; --warn:#ffb86b;
+    --serif:"Songti SC","STSong","Noto Serif CJK SC",Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 28px}
+  header{padding:88px 0 56px;border-bottom:1px solid var(--line)}
+  .kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  h1{font-family:var(--serif);font-size:clamp(40px,7vw,76px);line-height:1.04;font-weight:600;margin:18px 0 22px}
+  h1 em{font-style:normal;color:var(--accent2)}
+  .lead{max-width:640px;font-size:17px;color:var(--mut)}
+  .verdict{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
+  .chip{border:1px solid var(--line);background:var(--panel);padding:9px 14px;border-radius:999px;font-size:13px;color:var(--ink)}
+  .chip b{color:var(--accent);font-weight:600}
+  .checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin:40px 0 72px;border-radius:14px;overflow:hidden}
+  .check{background:var(--bg2);padding:18px 20px}
+  .check .n{font-family:var(--serif);font-size:26px;color:var(--accent);font-weight:600}
+  .check .l{font-size:13px;color:var(--mut);margin-top:4px}
+  section{padding:72px 0}
+  h2{font-family:var(--serif);font-size:32px;font-weight:600;margin-bottom:8px}
+  .sub{color:var(--mut);max-width:680px;margin-bottom:40px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px}
+  .card{border:1px solid var(--line);border-radius:18px;background:var(--bg2);overflow:hidden;display:flex;flex-direction:column}
+  .card .img{aspect-ratio:16/10;background:#0a0d0a;overflow:hidden;border-bottom:1px solid var(--line)}
+  .card .img img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+  .card .bd{padding:22px;display:flex;flex-direction:column;flex:1}
+  .tag{display:inline-block;font-size:11px;letter-spacing:.08em;padding:4px 10px;border-radius:6px;border:1px solid var(--line);color:var(--accent);margin-bottom:12px;align-self:flex-start}
+  .tag.alt{color:var(--accent2)}
+  .tag.ev{color:var(--warn)}
+  .card h3{font-family:var(--serif);font-size:22px;font-weight:600;margin-bottom:6px}
+  .card .role{font-size:13px;color:var(--mut);margin-bottom:12px}
+  .card p{font-size:14.5px;color:#c8d2c8;margin-bottom:10px}
+  .card .facts{list-style:none;margin:8px 0 16px;border-top:1px dashed var(--line);padding-top:12px}
+  .card .facts li{font-size:13.5px;color:var(--mut);padding:3px 0;padding-left:14px;position:relative}
+  .card .facts li::before{content:"✓";position:absolute;left:0;color:var(--accent);font-size:12px}
+  .card .facts li.warn::before{content:"△";color:var(--warn)}
+  .card .actions{margin-top:auto;display:flex;flex-wrap:wrap;gap:10px}
+  .btn{font-size:13px;padding:9px 14px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+  .btn.primary{background:var(--accent);color:#101310;border-color:transparent;font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--accent);font-weight:600;white-space:nowrap}
+  td{color:#c8d2c8}
+  .ok{color:var(--accent)} .warn{color:var(--warn)}
+  .note{border-left:3px solid var(--accent2);background:var(--bg2);padding:18px 20px;border-radius:0 12px 12px 0;margin-top:28px;color:#c8d2c8;font-size:14px}
+  footer{padding:56px 0 72px;border-top:1px solid var(--line);color:var(--mut);font-size:13px}
+  .foot-grid{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+  @media(max-width:640px){
+    .wrap{padding:0 18px}
+    h1{font-size:44px}
+    .grid{grid-template-columns:1fr}
+    section{padding:48px 0}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="kicker">AI Native Product Maker · DDC 2026</div>
+    <h1>从问题到产品，<br><em>用 AI 把想法变成可验证的现实。</em></h1>
+    <p class="lead">Ray（赵芮）· AI Native 产品创造者。我负责发现问题、定义产品与规则、用 AI 快速实现、验证，并把技术价值翻译成可体验的作品。下面每个项目都给出本人职责、真实成果与完成边界——不把方案写成已完成，不把原型写成真机。</p>
+    <div class="verdict">
+      <span class="chip"><b>主项目</b> FridgeMind</span>
+      <span class="chip"><b>既往产品探索</b> CookMate</span>
+      <span class="chip"><b>能力证据</b> 味衡 AI · Frame · AIGC 视觉</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="checks">
+    <div class="check"><div class="n">10 / 10</div><div class="l">味衡 AI 单元测试通过（2026-11-22 复跑）</div></div>
+    <div class="check"><div class="n">6 / 6</div><div class="l">FridgeMind 库存引擎测试通过（2026-11-22 复跑）</div></div>
+    <div class="check"><div class="n">烟测通过</div><div class="l">CookMate 状态机：6 步 / 暂停恢复 / 视觉事件</div></div>
+    <div class="check"><div class="n">8 页</div><div class="l">真实页面截图取证（桌面 + 移动）</div></div>
+  </div>
+
+  <section>
+    <h2>精选项目</h2>
+    <p class="sub">排序按「对 DDC 2026 报名的贡献」而非个人喜好。Demo 均为本地可打开版本，截图来自今天真实运行。</p>
+
+    <div class="grid">
+
+      <article class="card">
+        <div class="img"><img src="assets/evidence/fridgemind-demo.png" alt="FridgeMind 交互 Demo 截图"></div>
+        <div class="bd">
+          <span class="tag">主项目</span>
+          <h3>FridgeMind｜模块化 AI 智能冰箱助手</h3>
+          <div class="role">不换冰箱、可磁吸可拆卸的 AIoT 模块 · 本人职责：产品定义、用户场景、交互方案、原型推进</div>
+          <p>食材记录容易断、临期食物被遗忘，而智能冰箱整机贵且难普及。FridgeMind 用「门磁事件 + 摄像头差异检测 + 称重信号 + 本地检测模型 + 用户一键确认」感知食材存取，让普通冰箱获得库存管理与临期提醒。</p>
+          <ul class="facts">
+            <li>库存引擎 6 / 6 单测通过（入库 / 取出 / 撤销 / 零库存钳制）</li>
+            <li>本地 SSDLite MobileNet 检测模型 + 检测站原型页，构建通过</li>
+            <li>目标闭环：放入 → 检测 → 识别 → 更新库存 → 临期 → 推荐 → 取出 → 更新</li>
+            <li class="warn">感知闭环与识别精度尚未在 RDK 实机验证</li>
+          </ul>
+          <div class="actions">
+            <a class="btn primary" href="fridgemind.html">产品介绍</a>
+            <a class="btn" href="projects/fridgemind/">交互 Demo</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="img"><img src="assets/evidence/cookmate-site.png" alt="CookMate 产品网站截图"></div>
+        <div class="bd">
+          <span class="tag ev">既往产品探索</span>
+          <h3>CookMate｜桌面 AI 烹饪终端</h3>
+          <div class="role">会管理烹饪过程的终端 · 本人职责：产品定义、流程与交互规则、测试验收</div>
+          <p>做饭时任务并行、会中断、双手忙。CookMate 把备料、等待、发酵组织成带依赖关系的任务时间线，探索「任务感知—决策—实体提醒」的产品方法。</p>
+          <ul class="facts">
+            <li>本地 Python 状态机烟测通过：番茄炒蛋 6 步全流程</li>
+            <li>暂停冻结、恢复续跑、视觉事件不自动推进</li>
+            <li>STL / BOM / 接线 / 行动旗脚本就绪</li>
+            <li class="warn">未 RDK 真机；本次不作为参赛主项目</li>
+          </ul>
+          <div class="actions">
+            <a class="btn primary" href="projects/cookmate/">打开 Demo</a>
+            <a class="btn" href="https://github.com/Ray-X-13/Ray" target="_blank" rel="noreferrer">源码与说明</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="img"><img src="assets/evidence/weiheng-home.png" alt="味衡 AI 首页截图"></div>
+        <div class="bd">
+          <span class="tag ev">能力证据 · 产品与 AI 应用</span>
+          <h3>味衡 AI</h3>
+          <div class="role">饮食决策系统 · 本人职责：场景梳理、产品定位、应用叙事（NextUs）；本轮重构与视觉改版</div>
+          <p>饭前选择没有依据、饮食记录难以坚持。味衡把饥饿感、时间、预算、食材、场景与目标整理为当下条件，给出可解释的主建议 + 替代方案；饭后一次轻量反馈形成「记忆候选」，确认后才影响下一次排序。</p>
+          <ul class="facts">
+            <li>10 / 10 单元测试通过，生产构建通过</li>
+            <li>默认本地可解释规则，不依赖 API Key，不伪装大模型</li>
+            <li>桌面与移动端渲染通过（390×844 无横向溢出）</li>
+            <li class="warn">餐食目录 14 条，营养为区间估算，公网未部署</li>
+          </ul>
+          <div class="actions">
+            <a class="btn primary" href="projects/weiheng/">打开 Demo</a>
+            <a class="btn" href="https://github.com/Ray-X-13/weiheng-ai" target="_blank" rel="noreferrer">GitHub</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="img"><img src="assets/evidence/frame-demo.png" alt="Frame 自主摄影原型截图"></div>
+        <div class="bd">
+          <span class="tag ev">能力证据 · 机器人产品</span>
+          <h3>Frame</h3>
+          <div class="role">自主摄影搭子 · 本人职责：产品规则、界面结构、验收标准；AI 辅助的浏览器交互原型</div>
+          <p>一个人拍摄时无法自主构图与追踪。Frame 的电脑端原型在体验者移动时给出构图判断、模拟云台方向与高光事件反馈，用于验证产品逻辑。</p>
+          <ul class="facts">
+            <li>电脑端摄像头交互原型页可运行</li>
+            <li>产品规则与验收标准成文</li>
+            <li class="warn">尚未在 RDK X5 真机部署，不代表已完成机器人</li>
+          </ul>
+          <div class="actions">
+            <a class="btn primary" href="projects/frame/">打开原型</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="img"><img src="assets/evidence/flower-gesture.png" alt="花朵手势交互截图"></div>
+        <div class="bd">
+          <span class="tag ev">能力证据 · 交互创意</span>
+          <h3>花朵手势交互</h3>
+          <div class="role">互动视觉小品 · 本人职责：交互构思与实现</div>
+          <p>用手势触发花朵绽放的网页交互实验，验证「输入 → 反馈」的即时体验设计。</p>
+          <ul class="facts">
+            <li>静态交互页可运行，桌面渲染通过</li>
+          </ul>
+          <div class="actions">
+            <a class="btn primary" href="projects/flower/">打开 Demo</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="img"><img src="assets/evidence/weiheng-static.png" alt="AIGC 视觉与作品入口截图"></div>
+        <div class="bd">
+          <span class="tag ev">能力证据 · AIGC 视觉</span>
+          <h3>AIGC 视觉作品</h3>
+          <div class="role">《十五万两》《视界之外》 · 本人职责：创意构思、视觉生成与表达调整</div>
+          <p>两部 AI 视觉短片，用于证明「AI 应用与内容制作」方向的真实产出。</p>
+          <ul class="facts">
+            <li>完整网络优化版视频已随报名包交付</li>
+            <li class="warn">未公开部署，避免公开个人账号与完整素材</li>
+          </ul>
+          <div class="actions">
+            <a class="btn primary" href="aigc.html">在线观看</a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>今天真实执行的验证</h2>
+    <p class="sub">以下结果来自 2026-11-22 本次会话实际运行，非历史记录或推测。</p>
+    <table>
+      <thead><tr><th>项目</th><th>动作</th><th>结果</th></tr></thead>
+      <tbody>
+        <tr><td>味衡 WEIHENG v3</td><td><code>npm test</code>（Vitest）</td><td class="ok">10 / 10 通过</td></tr>
+        <tr><td>味衡 WEIHENG v3</td><td><code>npm run build</code>（tsc + Vite）</td><td class="ok">构建通过</td></tr>
+        <tr><td>FridgeMind prototype</td><td><code>npm test</code>（node:test）</td><td class="ok">6 / 6 通过</td></tr>
+        <tr><td>FridgeMind prototype</td><td><code>vite build</code></td><td class="ok">构建通过（1.9MB chunk，有优化空间）</td></tr>
+        <tr><td>CookMate runtime</td><td><code>cookmate_state.py --script</code></td><td class="ok">6 步完成、暂停/恢复/视觉事件正确</td></tr>
+        <tr><td>8 个页面</td><td>无头 Chrome 截图取证</td><td class="ok">全部渲染正常（仅 FridgeMind favicon 404）</td></tr>
+      </tbody>
+    </table>
+    <div class="note">
+      边界声明：以上「通过」只代表本地软件原型可运行、测试可复现；不等同于 RDK 真机、真实食物识别精度或厨房噪声下的语音可用性。RDK 开发板经验与机器人项目经验在报名表中仍按「没有用过 / 没有做过」如实填写。
+    </div>
+  </section>
+
+  <section>
+    <h2>下一步（按价值排序）</h2>
+    <div class="grid">
+      <article class="card" style="border-color:var(--accent2)">
+        <div class="bd">
+          <span class="tag alt">P0</span>
+          <h3>确认学历身份</h3>
+          <p>线上网页写「2025 届本科毕业」，报名语境为在读。确认后统一网页与报名表。</p>
+        </div>
+      </article>
+      <article class="card" style="border-color:var(--accent2)">
+        <div class="bd">
+          <span class="tag alt">P0</span>
+          <h3>发布本作品集</h3>
+          <p>把本目录部署为公开网页，让审核人免登录可打开全部 Demo；未经本人确认不发布。</p>
+        </div>
+      </article>
+      <article class="card">
+        <div class="bd">
+          <span class="tag">P1</span>
+          <h3>RDK 真机烟测</h3>
+          <p>用团队设备验证 FridgeMind 的门磁 / 摄像头取流 / 称重信号感知闭环，锁定主方向。</p>
+        </div>
+      </article>
+      <article class="card">
+        <div class="bd">
+          <span class="tag">P1</span>
+          <h3>补齐味衡公网</h3>
+          <p>味衡 GitHub 仓库为空壳，需补源码或部署 dist/，让产品证据可公开访问。</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="kicker">Links</div>
+    <div class="foot-grid">
+      <a class="chip" href="https://ray-x-13.github.io/Ray/" target="_blank" rel="noreferrer">个人网页 · ray-x-13.github.io/Ray</a>
+      <a class="chip" href="https://github.com/Ray-X-13/Ray" target="_blank" rel="noreferrer">GitHub · Ray-X-13/Ray</a>
+      <a class="chip" href="https://gitee.com/Ray_13/ray" target="_blank" rel="noreferrer">Gitee · Ray_13/ray</a>
+      <a class="chip" href="https://hackathon.d-robotics.cc/" target="_blank" rel="noreferrer">DDC 2026 官方主页</a>
+    </div>
+    <p style="margin-top:20px">© 2026 Ray · 本页所有验证结果均可复现，截图与测试报告见本目录 assets/evidence 与各项目仓库。</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101310">
+<meta name="description" content="Ray 的 AIGC 视觉作品：《十五万两》《视界之外》。">
+<title>Ray · AIGC 视觉作品</title>
+<style>
+  :root{--bg:#101310;--bg2:#171a17;--panel:#1c201c;--line:rgba(235,245,235,.13);--ink:#eef3ed;--mut:#9aa79a;--accent:#c8ff5e;--accent2:#6ee7ff;--serif:"Songti SC","STSong","Noto Serif CJK SC",Georgia,serif;--sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.7}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px}
+  header{padding:76px 0 44px;border-bottom:1px solid var(--line)}
+  .kicker{font-size:12px;letter-spacing:.22em;color:var(--accent);font-weight:600;text-transform:uppercase}
+  h1{font-family:var(--serif);font-size:clamp(36px,6vw,60px);font-weight:600;margin:16px 0 14px}
+  .lead{color:var(--mut);max-width:640px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:44px 0}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+  .work{border:1px solid var(--line);border-radius:18px;background:var(--bg2);overflow:hidden}
+  video{width:100%;display:block;background:#000;aspect-ratio:16/9}
+  .bd{padding:20px}
+  .bd h2{font-family:var(--serif);font-size:21px;font-weight:600;margin-bottom:6px}
+  .bd p{font-size:14px;color:#c8d2c8;margin-bottom:6px}
+  .bd .meta{font-size:12.5px;color:var(--mut)}
+  .btn{display:inline-block;font-size:14px;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);margin-top:14px}
+  footer{padding:44px 0 64px;border-top:1px solid var(--line);color:var(--mut);font-size:13px}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="kicker">AIGC · Visual Works</div>
+  <h1>AIGC 视觉作品</h1>
+  <p class="lead">本人职责：创意策划、分镜设计、AI 视觉生成、镜头组织与后期整合。以下为完整网络优化版，可直接在线播放。</p>
+</header>
+<main class="wrap">
+  <div class="grid">
+    <article class="work">
+      <video src="assets/videos/fifteen-taels-web.mp4" controls preload="metadata" poster="assets/evidence/weiheng-static.png"></video>
+      <div class="bd">
+        <h2>《十五万两》</h2>
+        <p>约 60 秒 AI 叙事短片：创意构思、视觉风格设计、多轮生成与叙事节奏控制。</p>
+        <div class="meta">时长约 1 分钟 · 网络优化版</div>
+      </div>
+    </article>
+    <article class="work">
+      <video src="assets/videos/beyond-vision-web.mp4" controls preload="metadata" poster="assets/evidence/weiheng-static.png"></video>
+      <div class="bd">
+        <h2>《视界之外》</h2>
+        <p>约 2 分 20 秒视觉叙事作品：镜头一致性调整、生成结果筛选与后期整合。</p>
+        <div class="meta">时长约 2 分 20 秒 · 网络优化版</div>
+      </div>
+    </article>
+  </div>
+  <a class="btn" href="index.html">返回作品集首页</a>
+</main>
+<footer class="wrap">AIGC 作品仅作为「AI 应用与内容制作」能力证据展示，原始母带不进入公开仓库。</footer>
+</body>
+</html>

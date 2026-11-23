@@ -1,0 +1,50 @@
+[
+  {
+    "link": "fridgemind.html",
+    "status": 200,
+    "title": "FridgeMind｜模块化 AI 智能冰箱助手",
+    "errors": []
+  },
+  {
+    "link": "aigc.html",
+    "status": 200,
+    "title": "Ray · AIGC 视觉作品",
+    "errors": []
+  },
+  {
+    "link": "projects/cookmate/",
+    "status": 200,
+    "title": "CookMate · 48 小时实体 Demo",
+    "errors": []
+  },
+  {
+    "link": "projects/fridgemind/",
+    "status": 200,
+    "title": "FridgeMind 检查站｜桌面验证",
+    "errors": []
+  },
+  {
+    "link": "projects/weiheng/",
+    "status": 200,
+    "title": "今日｜味衡 WEIHENG",
+    "errors": []
+  },
+  {
+    "link": "projects/frame/",
+    "status": 200,
+    "title": "Frame｜自主摄影搭子",
+    "errors": []
+  },
+  {
+    "link": "projects/flower/",
+    "status": 200,
+    "title": "指尖生花 · Gesture Bloom",
+    "errors": []
+  },
+  {
+    "link": "assets/evidence/cookmate-site.png",
+    "status": 200,
+    "title": "cookmate-site.png (1440×7255)",
+    "errors": []
+  }
+]

@@ -1,0 +1,54 @@
+[
+  {
+    "name": "weiheng-home",
+    "status": "ok",
+    "title": "今日｜味衡 WEIHENG",
+    "consoleErrors": []
+  },
+  {
+    "name": "weiheng-mobile",
+    "status": "ok",
+    "title": "今日｜味衡 WEIHENG",
+    "consoleErrors": []
+  },
+  {
+    "name": "cookmate-site",
+    "status": "ok",
+    "title": "CookMate · 48 小时实体 Demo",
+    "consoleErrors": []
+  },
+  {
+    "name": "fridgemind-demo",
+    "status": "ok",
+    "title": "FridgeMind 检查站｜桌面验证",
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ]
+  },
+  {
+    "name": "frame-demo",
+    "status": "ok",
+    "title": "Frame｜自主摄影搭子",
+    "consoleErrors": []
+  },
+  {
+    "name": "flower-gesture",
+    "status": "ok",
+    "title": "指尖生花 · Gesture Bloom",
+    "consoleErrors": []
+  },
+  {
+    "name": "weiheng-static",
+    "status": "ok",
+    "title": "味衡｜让下一餐有依据",
+    "consoleErrors": []
+  },
+  {
+    "name": "portfolio-home",
+    "status": "ok",
+    "title": "Ray",
+    "consoleErrors": []
+  }
+]

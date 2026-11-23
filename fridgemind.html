@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101310">
+<meta name="description" content="FridgeMind｜模块化 AI 智能冰箱助手：不换冰箱、可磁吸可拆卸，让普通冰箱获得食材感知、库存管理与智能决策。">
+<title>FridgeMind｜模块化 AI 智能冰箱助手</title>
+<style>
+  :root{--bg:#101310;--bg2:#171a17;--panel:#1c201c;--line:rgba(235,245,235,.13);--ink:#eef3ed;--mut:#9aa79a;--accent:#c8ff5e;--accent2:#6ee7ff;--warn:#ffb86b;--serif:"Songti SC","STSong","Noto Serif CJK SC",Georgia,serif;--sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+  header{padding:88px 0 56px;border-bottom:1px solid var(--line)}
+  .kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  h1{font-family:var(--serif);font-size:clamp(38px,6.5vw,68px);line-height:1.06;font-weight:600;margin:18px 0 22px}
+  h1 em{font-style:normal;color:var(--accent2)}
+  .lead{max-width:660px;font-size:17px;color:var(--mut)}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+  .chip{border:1px solid var(--line);background:var(--panel);padding:8px 14px;border-radius:999px;font-size:13px}
+  .chip b{color:var(--accent)}
+  section{padding:64px 0;border-bottom:1px solid var(--line)}
+  h2{font-family:var(--serif);font-size:28px;font-weight:600;margin-bottom:8px}
+  .sub{color:var(--mut);margin-bottom:30px;max-width:720px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:720px){.cols{grid-template-columns:1fr}}
+  .box{border:1px solid var(--line);border-radius:16px;background:var(--bg2);padding:22px}
+  .box h3{font-size:16px;margin-bottom:12px;color:var(--accent)}
+  .box.alt h3{color:var(--warn)}
+  .box ul{list-style:none}
+  .box li{font-size:14.5px;color:#c8d2c8;padding:5px 0;padding-left:18px;position:relative}
+  .box li::before{content:"✓";position:absolute;left:0;color:var(--accent)}
+  .box.alt li::before{content:"→";color:var(--warn)}
+  .fig{background:#0a0d0a;border:1px solid var(--line);border-radius:16px;padding:22px;margin-top:22px}
+  .fig svg{width:100%;height:auto;display:block}
+  .figcap{font-size:12.5px;color:var(--mut);margin-top:12px}
+  .imgs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}
+  @media(max-width:720px){.imgs{grid-template-columns:1fr}}
+  .imgs img{width:100%;border:1px solid var(--line);border-radius:14px;display:block;background:#0a0d0a}
+  .btn{display:inline-block;font-size:14px;padding:11px 18px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);margin-right:10px;margin-top:12px}
+  .btn.primary{background:var(--accent);color:#101310;border-color:transparent;font-weight:600}
+  footer{padding:52px 0 72px;color:var(--mut);font-size:13px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="kicker">Flagship · DDC 2026</div>
+    <h1>不换冰箱，<br>让普通冰箱<em>变聪明</em>。</h1>
+    <p class="lead">FridgeMind 是一个可磁吸、可拆卸的外置 AI 硬件模块：通过门磁事件、摄像头差异检测、称重信号与本地检测模型，让普通冰箱获得食材感知、库存管理和智能决策，不逐件扫码、不做大规模改造。</p>
+    <div class="chips">
+      <span class="chip"><b>形态</b> 磁吸 · 可拆卸 · 非侵入</span>
+      <span class="chip"><b>感知</b> 门磁 + 摄像头 + 称重</span>
+      <span class="chip"><b>决策</b> RDK 本地 · 断网可用</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <h2>已实现 vs 计划功能</h2>
+    <p class="sub">评审关心的不是概念有多漂亮，而是哪些现在能跑、哪些是现场目标。这里明确区分，不把计划写成已完成。</p>
+    <div class="cols">
+      <div class="box">
+        <h3>现已实现（软件原型）</h3>
+        <ul>
+          <li>库存状态机：入库 / 取出 / 撤销 / 零库存钳制 / 临期追踪</li>
+          <li>库存引擎 6 / 6 单元测试通过，构建通过</li>
+          <li>本地轻量目标检测模型（SSDLite MobileNet）接入</li>
+          <li>检测站交互原型：扫描位 + 确认键 + 库存面板</li>
+          <li>产品方案、竞品研究、架构与一页说明</li>
+        </ul>
+      </div>
+      <div class="box alt">
+        <h3>48 小时现场目标</h3>
+        <ul>
+          <li>RDK 真机：摄像头取流、门磁事件、称重信号接入</li>
+          <li>变化区域判定 + 候选识别 + 用户一键确认闭环</li>
+          <li>临期提醒 + 基于库存的菜谱推荐</li>
+          <li>磁吸外壳 / 支架与实体按键集成</li>
+          <li>端到端演示 + 断网 / 遮挡 / 误识别降级测试</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>食材存取感知闭环</h2>
+    <p class="sub">核心创新不是“AI 管理冰箱”，而是设备如何知道食材被放入、取出，并把人从逐件扫码中解放出来。</p>
+    <div class="fig">
+      <svg viewBox="0 0 760 260" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica,Arial,sans-serif">
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#c8ff5e"/></marker></defs>
+        <g fill="#1c201c" stroke="#3a463c">
+          <rect x="8" y="70" width="130" height="110" rx="12"/><text x="73" y="120" text-anchor="middle" fill="#eef3ed" font-size="15">门磁开门</text><text x="73" y="142" text-anchor="middle" fill="#9aa79a" font-size="11.5">开关门事件</text>
+          <rect x="170" y="70" width="130" height="110" rx="12"/><text x="235" y="120" text-anchor="middle" fill="#eef3ed" font-size="15">摄像头抓拍</text><text x="235" y="142" text-anchor="middle" fill="#9aa79a" font-size="11.5">关门后一帧</text>
+          <rect x="332" y="70" width="130" height="110" rx="12"/><text x="397" y="120" text-anchor="middle" fill="#eef3ed" font-size="15">差异检测</text><text x="397" y="142" text-anchor="middle" fill="#9aa79a" font-size="11.5">定位变化区域</text>
+          <rect x="494" y="70" width="130" height="110" rx="12"/><text x="559" y="120" text-anchor="middle" fill="#eef3ed" font-size="15">本地检测模型</text><text x="559" y="142" text-anchor="middle" fill="#9aa79a" font-size="11.5">候选食材</text>
+          <rect x="656" y="70" width="96" height="110" rx="12"/><text x="704" y="120" text-anchor="middle" fill="#eef3ed" font-size="15">用户确认</text><text x="704" y="142" text-anchor="middle" fill="#9aa79a" font-size="11.5">一键 / 语音</text>
+        </g>
+        <g fill="#1c201c" stroke="#3a463c">
+          <rect x="170" y="8" width="130" height="46" rx="10"/><text x="235" y="36" text-anchor="middle" fill="#eef3ed" font-size="14">称重信号</text>
+          <rect x="332" y="198" width="292" height="54" rx="12" fill="#172018" stroke="#c8ff5e"/><text x="478" y="221" text-anchor="middle" fill="#c8ff5e" font-size="14">库存状态机更新</text><text x="478" y="241" text-anchor="middle" fill="#9aa79a" font-size="11.5">临期计时 · 菜谱匹配</text>
+        </g>
+        <g stroke="#c8ff5e" stroke-width="2" fill="none" marker-end="url(#ar)">
+          <line x1="138" y1="125" x2="168" y2="125"/><line x1="300" y1="125" x2="330" y2="125"/><line x1="462" y1="125" x2="492" y2="125"/><line x1="624" y1="125" x2="654" y2="125"/>
+          <path d="M235 54 L235 68" marker-end="none"/><path d="M478 198 L478 180" marker-end="none" stroke-dasharray="4 4"/>
+        </g>
+      </svg>
+      <div class="figcap">组合感知 + 人机共同确认：低置信度时进入候选，用户一次确认或换项，不让错误结果直接污染库存。</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>RDK 系统架构（四层）</h2>
+    <div class="fig">
+      <svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica,Arial,sans-serif">
+        <g font-size="14">
+          <rect x="8" y="14" width="744" height="58" rx="10" fill="#1c201c" stroke="#3a463c"/><text x="28" y="42" fill="#c8ff5e" font-weight="700">感知输入层</text><text x="28" y="62" fill="#9aa79a" font-size="12">门磁 · USB/MIPI 摄像头 · 称重传感器 · 实体按键</text>
+          <rect x="8" y="88" width="744" height="58" rx="10" fill="#1c201c" stroke="#3a463c"/><text x="28" y="116" fill="#6ee7ff" font-weight="700">AI 理解层</text><text x="28" y="136" fill="#9aa79a" font-size="12">本地目标检测 · 变化区域判定 · 食材候选生成</text>
+          <rect x="8" y="162" width="744" height="58" rx="10" fill="#1c201c" stroke="#3a463c"/><text x="28" y="190" fill="#c8ff5e" font-weight="700">任务决策层</text><text x="28" y="210" fill="#9aa79a" font-size="12">库存状态机 · 临期追踪 · 菜谱匹配 · 用户确认</text>
+          <rect x="8" y="236" width="744" height="52" rx="10" fill="#1c201c" stroke="#3a463c"/><text x="28" y="260" fill="#6ee7ff" font-weight="700">交互执行层</text><text x="28" y="278" fill="#9aa79a" font-size="12">屏幕 / 指示灯 · 语音 · 实体确认键 · 手机辅助页</text>
+        </g>
+      </svg>
+      <div class="figcap">RDK X5 承担本地感知、识别、库存与交互；手机仅作同网查看，断网后主链路仍可用。</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>硬件结构与磁吸安装</h2>
+    <div class="fig">
+      <svg viewBox="0 0 760 220" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica,Arial,sans-serif">
+        <g stroke="#3a463c">
+          <rect x="20" y="30" width="46" height="160" rx="6" fill="#141814"/><text x="43" y="118" text-anchor="middle" fill="#9aa79a" font-size="12" transform="rotate(-90 43 118)">冰箱门 / 侧壁</text>
+          <rect x="150" y="55" width="360" height="110" rx="14" fill="#1c201c" stroke="#c8ff5e"/><text x="330" y="100" text-anchor="middle" fill="#eef3ed" font-weight="700" font-size="16">FridgeMind 模块</text><text x="330" y="124" text-anchor="middle" fill="#9aa79a" font-size="12">RDK 主控 + 摄像头 + 屏幕 + 按键</text><text x="330" y="146" text-anchor="middle" fill="#9aa79a" font-size="12">磁吸背板 · 可拆卸 · 不破坏冰箱</text>
+          <g fill="#6ee7ff"><circle cx="132" cy="80" r="7"/><circle cx="132" cy="140" r="7"/></g>
+          <rect x="570" y="55" width="170" height="110" rx="14" fill="#141814"/><text x="655" y="95" text-anchor="middle" fill="#eef3ed" font-size="14">货架称重贴片</text><text x="655" y="118" text-anchor="middle" fill="#9aa79a" font-size="11.5">重量增减信号</text><text x="655" y="140" text-anchor="middle" fill="#9aa79a" font-size="11.5">+ 门磁传感器</text>
+        </g>
+      </svg>
+      <div class="figcap">磁吸是产品形态而非技术核心；技术核心是“事件 + 视觉 + 重量”的组合感知，以及人机共同确认。</div>
+    </div>
+    <div class="imgs">
+      <figure><img src="assets/fridgemind/architecture.png" alt="FridgeMind 系统架构"><figcaption class="figcap">既有系统架构图</figcaption></figure>
+      <figure><img src="assets/fridgemind/product_sketch.png" alt="FridgeMind 产品草图"><figcaption class="figcap">既有产品草图</figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>交互 Demo 与本人贡献</h2>
+    <p class="sub">交互 Demo 为桌面验证原型：打开后可用摄像头扫描位识别候选、按确认键更新库存；模型在浏览器本地加载。</p>
+    <a class="btn primary" href="projects/fridgemind/">打开交互 Demo</a>
+    <a class="btn" href="index.html">返回作品集首页</a>
+    <div class="box" style="margin-top:26px">
+      <h3>本人贡献</h3>
+      <ul>
+        <li>用户痛点分析、竞品研究、产品定位与功能架构</li>
+        <li>感知闭环与交互方案设计（门磁 + 摄像头 + 称重 + 确认）</li>
+        <li>库存状态机规则与验收标准、原型推进</li>
+        <li>展示材料与演示方案</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">FridgeMind · 模块化 AI 智能冰箱助手 · 已实现功能与计划功能已明确区分，检测精度以实机验证为准。</div>
+</footer>
+
+</body>
+</html>

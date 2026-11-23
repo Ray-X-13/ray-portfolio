@@ -1,0 +1,3614 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171713">
+  <meta name="description" content="Frame 是一个会判断何时值得记录的自主摄影机器人：自动构图、生成动作 Take，并把控制权随时交还给人。">
+  <meta property="og:title" content="Frame｜自主摄影搭子">
+  <meta property="og:description" content="它不只追着你转，还会留下值得回看的那一次。">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23171713'/%3E%3Cpath d='M18 18h28v8H27v8h16v8H27v10h-9z' fill='%23c9ff5d'/%3E%3C/svg%3E">
+  <title>Frame｜自主摄影搭子</title>
+  <style>
+    :root {
+      --ink: #171713;
+      --ink-2: #22221d;
+      --ink-3: #303029;
+      --paper: #f3f0e7;
+      --paper-2: #e9e4d8;
+      --white: #fffdf7;
+      --lime: #c9ff5d;
+      --lime-deep: #9ed83a;
+      --orange: #ff6847;
+      --sky: #80ded5;
+      --muted: #706f66;
+      --muted-light: #a4a497;
+      --line: rgba(23, 23, 19, 0.14);
+      --line-light: rgba(249, 247, 239, 0.14);
+      --radius-s: 16px;
+      --radius: 26px;
+      --radius-l: 38px;
+      --shell: min(1280px, calc(100% - 48px));
+      --serif: "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC", Georgia, serif;
+      --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+      --mono: "SFMono-Regular", "Cascadia Code", "Roboto Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--ink);
+    }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 84% 4%, rgba(201, 255, 93, 0.15), transparent 25rem),
+        radial-gradient(circle at 3% 33%, rgba(255, 104, 71, 0.08), transparent 28rem),
+        var(--paper);
+      font-family: var(--sans);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection {
+      color: var(--ink);
+      background: var(--lime);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    button,
+    a,
+    input {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--orange);
+      outline-offset: 4px;
+    }
+
+    img,
+    svg {
+      display: block;
+    }
+
+    .shell {
+      width: var(--shell);
+      margin: 0 auto;
+    }
+
+    .site-header {
+      position: fixed;
+      z-index: 100;
+      top: 0;
+      right: 0;
+      left: 0;
+      border-bottom: 1px solid transparent;
+      transition: background 180ms ease, border-color 180ms ease;
+    }
+
+    .site-header.scrolled {
+      border-bottom-color: var(--line);
+      background: rgba(243, 240, 231, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .nav {
+      display: flex;
+      min-height: 82px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 13px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+    }
+
+    .brand-mark {
+      position: relative;
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 11px;
+      color: var(--ink);
+      background: var(--lime);
+      font-family: var(--mono);
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      border-color: var(--ink);
+      border-style: solid;
+      opacity: 0.45;
+    }
+
+    .brand-mark::before {
+      top: 5px;
+      left: 5px;
+      border-width: 1px 0 0 1px;
+    }
+
+    .brand-mark::after {
+      right: 5px;
+      bottom: 5px;
+      border-width: 0 1px 1px 0;
+    }
+
+    .brand small {
+      display: block;
+      margin-top: 1px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.13em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: clamp(18px, 2.5vw, 34px);
+    }
+
+    .nav-links a {
+      color: #5d5d54;
+      font-size: 12px;
+      font-weight: 650;
+      transition: color 160ms ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--ink);
+    }
+
+    .nav-cta {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 0 17px;
+      border-radius: 999px;
+      color: var(--paper);
+      background: var(--ink);
+      font-size: 12px;
+      font-weight: 720;
+      transition: transform 160ms ease, background 160ms ease;
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-1px);
+      background: var(--ink-3);
+    }
+
+    .nav-cta span {
+      color: var(--lime);
+      font-family: var(--mono);
+    }
+
+    .hero {
+      position: relative;
+      display: grid;
+      min-height: 100svh;
+      grid-template-columns: minmax(0, 0.88fr) minmax(520px, 1.12fr);
+      gap: clamp(36px, 5vw, 76px);
+      align-items: center;
+      padding: 126px 0 72px;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 24px;
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 26px;
+      height: 2px;
+      background: var(--orange);
+    }
+
+    .hero h1 {
+      max-width: 650px;
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(58px, 7.1vw, 108px);
+      font-weight: 500;
+      letter-spacing: -0.075em;
+      line-height: 0.94;
+    }
+
+    .hero h1 span {
+      display: block;
+    }
+
+    .hero h1 em {
+      position: relative;
+      color: var(--ink);
+      font-style: normal;
+      white-space: nowrap;
+    }
+
+    .hero h1 em::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      right: -0.04em;
+      bottom: 0.06em;
+      left: -0.03em;
+      height: 0.24em;
+      border-radius: 999px;
+      background: var(--lime);
+      transform: rotate(-1deg);
+    }
+
+    .hero-lead {
+      max-width: 570px;
+      margin: 30px 0 0;
+      color: #55554c;
+      font-size: clamp(15px, 1.35vw, 18px);
+      line-height: 1.82;
+    }
+
+    .hero-lead strong {
+      color: var(--ink);
+      font-weight: 750;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 34px;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 50px;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 0 21px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      cursor: pointer;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 760;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, color 160ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+    }
+
+    .button-dark {
+      color: var(--paper);
+      border-color: var(--ink);
+      background: var(--ink);
+    }
+
+    .button-dark:hover {
+      border-color: var(--ink-3);
+      background: var(--ink-3);
+    }
+
+    .button-light:hover {
+      border-color: rgba(23, 23, 19, 0.28);
+      background: rgba(255, 255, 255, 0.32);
+    }
+
+    .button-arrow {
+      color: var(--lime);
+      font-family: var(--mono);
+      font-size: 15px;
+      transition: transform 160ms ease;
+    }
+
+    .button:hover .button-arrow {
+      transform: translateX(3px);
+    }
+
+    .hero-questions {
+      display: grid;
+      max-width: 570px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      margin-top: 38px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--line);
+    }
+
+    .hero-question {
+      min-height: 104px;
+      padding: 16px;
+      background: rgba(255, 253, 247, 0.55);
+    }
+
+    .hero-question span {
+      display: block;
+      margin-bottom: 13px;
+      color: var(--orange);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .hero-question strong {
+      display: block;
+      font-size: 12px;
+      font-weight: 750;
+      line-height: 1.45;
+    }
+
+    .hero-art {
+      --head-rotation: 0deg;
+      position: relative;
+      min-height: 660px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-l);
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        radial-gradient(circle at 48% 35%, rgba(201, 255, 93, 0.12), transparent 23rem),
+        #191a16;
+      background-size: 54px 54px, 54px 54px, auto, auto;
+      box-shadow: 0 32px 90px rgba(23, 23, 19, 0.22);
+      isolation: isolate;
+    }
+
+    .hero-art::before {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, transparent 49.9%, rgba(255, 255, 255, 0.05) 50%, transparent 50.1%),
+        linear-gradient(transparent 49.9%, rgba(255, 255, 255, 0.05) 50%, transparent 50.1%);
+    }
+
+    .hero-art::after {
+      content: "FRAME / 01";
+      position: absolute;
+      z-index: 2;
+      right: 24px;
+      bottom: 21px;
+      color: rgba(255, 255, 255, 0.38);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.16em;
+    }
+
+    .art-label {
+      position: absolute;
+      z-index: 4;
+      top: 24px;
+      left: 24px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: rgba(255, 255, 255, 0.62);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
+    .art-label::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 0 5px rgba(201, 255, 93, 0.1);
+    }
+
+    .product-svg {
+      position: absolute;
+      z-index: 2;
+      right: -2%;
+      bottom: -5%;
+      width: 105%;
+      filter: drop-shadow(0 34px 42px rgba(0, 0, 0, 0.4));
+    }
+
+    .camera-head {
+      transform-box: fill-box;
+      transform-origin: 50% 75%;
+      transform: rotate(var(--head-rotation));
+      transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .status-light {
+      animation: statusPulse 2.6s ease-in-out infinite;
+    }
+
+    .art-status {
+      position: absolute;
+      z-index: 4;
+      top: 52px;
+      right: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(17, 18, 15, 0.72);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      backdrop-filter: blur(12px);
+    }
+
+    .art-status b {
+      color: var(--lime);
+      font-weight: 700;
+    }
+
+    .take-float {
+      position: absolute;
+      z-index: 5;
+      bottom: 34px;
+      left: 26px;
+      width: min(310px, calc(100% - 60px));
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      color: var(--paper);
+      background: rgba(23, 23, 19, 0.82);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .take-float-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 13px;
+    }
+
+    .take-float-top span {
+      color: var(--lime);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+    }
+
+    .take-float-top time {
+      color: rgba(255, 255, 255, 0.45);
+      font-family: var(--mono);
+      font-size: 9px;
+    }
+
+    .take-float strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 730;
+    }
+
+    .take-bars {
+      display: grid;
+      grid-template-columns: 0.35fr 0.9fr 0.55fr;
+      gap: 4px;
+      margin-top: 13px;
+    }
+
+    .take-bars i {
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .take-bars i:nth-child(2) {
+      background: var(--lime);
+    }
+
+    .marquee {
+      overflow: hidden;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.24);
+    }
+
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee 28s linear infinite;
+    }
+
+    .marquee-group {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      gap: 28px;
+      padding: 17px 14px;
+      color: #55554c;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.11em;
+      white-space: nowrap;
+      text-transform: uppercase;
+    }
+
+    .marquee-group i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--orange);
+    }
+
+    .section {
+      padding: clamp(92px, 10vw, 148px) 0;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 0.72fr 1.28fr;
+      gap: 48px;
+      align-items: end;
+      margin-bottom: clamp(42px, 6vw, 72px);
+    }
+
+    .section-kicker {
+      margin: 0 0 18px;
+      color: var(--orange);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .section h2 {
+      max-width: 820px;
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(39px, 5.4vw, 76px);
+      font-weight: 500;
+      letter-spacing: -0.065em;
+      line-height: 1.03;
+    }
+
+    .section h2 em {
+      color: var(--orange);
+      font-style: normal;
+    }
+
+    .section-intro {
+      max-width: 680px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(15px, 1.4vw, 18px);
+      line-height: 1.8;
+    }
+
+    .problem-layout {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 22px;
+    }
+
+    .problem-quote {
+      min-height: 430px;
+      padding: clamp(28px, 5vw, 56px);
+      border-radius: var(--radius-l);
+      color: var(--paper);
+      background:
+        radial-gradient(circle at 95% 5%, rgba(201, 255, 93, 0.15), transparent 18rem),
+        var(--ink);
+    }
+
+    .problem-quote .quote-mark {
+      color: var(--lime);
+      font-family: var(--serif);
+      font-size: 94px;
+      line-height: 0.8;
+    }
+
+    .problem-quote blockquote {
+      max-width: 620px;
+      margin: 30px 0 0;
+      font-family: var(--serif);
+      font-size: clamp(31px, 4.2vw, 56px);
+      letter-spacing: -0.055em;
+      line-height: 1.12;
+    }
+
+    .problem-quote p {
+      max-width: 540px;
+      margin: 30px 0 0;
+      color: #a6a79a;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .problem-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .problem-item {
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      gap: 22px;
+      align-items: start;
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 247, 0.48);
+    }
+
+    .problem-index {
+      display: grid;
+      width: 52px;
+      height: 52px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--orange);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .problem-item h3 {
+      margin: 2px 0 8px;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      line-height: 1.35;
+    }
+
+    .problem-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.72;
+    }
+
+    .demo-section {
+      overflow: hidden;
+      color: var(--paper);
+      background:
+        radial-gradient(circle at 95% 15%, rgba(128, 222, 213, 0.11), transparent 27rem),
+        radial-gradient(circle at 5% 80%, rgba(201, 255, 93, 0.08), transparent 30rem),
+        var(--ink);
+    }
+
+    .demo-section .section-kicker {
+      color: var(--lime);
+    }
+
+    .demo-section .section-intro {
+      color: var(--muted-light);
+    }
+
+    .director-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(330px, 0.72fr);
+      overflow: hidden;
+      border: 1px solid var(--line-light);
+      border-radius: 32px;
+      background: #10110e;
+      box-shadow: 0 42px 100px rgba(0, 0, 0, 0.24);
+    }
+
+    .demo-stage {
+      --focus-x: 26%;
+      --focus-y: 7%;
+      --focus-w: 48%;
+      --focus-h: 84%;
+      position: relative;
+      min-height: 640px;
+      overflow: hidden;
+      border-right: 1px solid var(--line-light);
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.055), transparent 30rem),
+        #171814;
+      background-size: 52px 52px, 52px 52px, auto, auto;
+      isolation: isolate;
+    }
+
+    .demo-stage[data-mode="half"] {
+      --focus-x: 31%;
+      --focus-y: 4%;
+      --focus-w: 38%;
+      --focus-h: 72%;
+    }
+
+    .demo-stage[data-mode="detail"] {
+      --focus-x: 41%;
+      --focus-y: 18%;
+      --focus-w: 28%;
+      --focus-h: 48%;
+    }
+
+    .stage-topbar {
+      position: absolute;
+      z-index: 6;
+      top: 18px;
+      right: 18px;
+      left: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      color: rgba(255, 255, 255, 0.55);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.07em;
+    }
+
+    .stage-rec {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 9px;
+      border-radius: 999px;
+      color: rgba(255, 255, 255, 0.75);
+      background: rgba(9, 10, 8, 0.62);
+    }
+
+    .stage-rec::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--lime);
+      animation: statusPulse 1.8s ease-in-out infinite;
+    }
+
+    .stage-mode {
+      padding: 7px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      background: rgba(9, 10, 8, 0.5);
+    }
+
+    .demo-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #personGroup {
+      transition: transform 560ms cubic-bezier(0.22, 0.8, 0.25, 1);
+    }
+
+    .person-body {
+      transform-box: fill-box;
+      transform-origin: center bottom;
+    }
+
+    .actioning .person-body {
+      animation: demonstration 1s cubic-bezier(0.45, 0, 0.2, 1);
+    }
+
+    .actioning .person-arm-left {
+      animation: armLift 1s cubic-bezier(0.45, 0, 0.2, 1);
+      transform-box: fill-box;
+      transform-origin: top center;
+    }
+
+    .actioning .person-arm-right {
+      animation: armAnswer 1s cubic-bezier(0.45, 0, 0.2, 1);
+      transform-box: fill-box;
+      transform-origin: top center;
+    }
+
+    .focus-frame {
+      position: absolute;
+      z-index: 4;
+      top: var(--focus-y);
+      left: var(--focus-x);
+      width: var(--focus-w);
+      height: var(--focus-h);
+      border: 1px solid rgba(201, 255, 93, 0.78);
+      border-radius: 14px;
+      box-shadow: 0 0 0 999px rgba(7, 8, 6, 0.24);
+      transition: top 360ms ease, left 360ms ease, width 360ms ease, height 360ms ease, border-color 180ms ease;
+      pointer-events: none;
+    }
+
+    .focus-frame::before,
+    .focus-frame::after {
+      content: "";
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-color: var(--lime);
+      border-style: solid;
+    }
+
+    .focus-frame::before {
+      top: -1px;
+      left: -1px;
+      border-width: 3px 0 0 3px;
+      border-radius: 12px 0 0;
+    }
+
+    .focus-frame::after {
+      right: -1px;
+      bottom: -1px;
+      border-width: 0 3px 3px 0;
+      border-radius: 0 0 12px;
+    }
+
+    .focus-tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 6px 8px;
+      border-radius: 7px;
+      color: var(--ink);
+      background: var(--lime);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 850;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .is-lost .focus-frame {
+      border-color: var(--orange);
+      border-style: dashed;
+    }
+
+    .is-lost .focus-tag {
+      color: var(--paper);
+      background: var(--orange);
+    }
+
+    .lost-cover {
+      position: absolute;
+      z-index: 5;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(17, 17, 14, 0.68);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease;
+      backdrop-filter: blur(3px);
+    }
+
+    .is-lost .lost-cover {
+      opacity: 1;
+    }
+
+    .lost-cover-inner {
+      max-width: 320px;
+      padding: 20px 22px;
+      border: 1px solid rgba(255, 104, 71, 0.45);
+      border-radius: 16px;
+      text-align: center;
+      background: rgba(23, 23, 19, 0.92);
+    }
+
+    .lost-cover small {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--orange);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+    }
+
+    .lost-cover strong {
+      display: block;
+      font-size: 21px;
+    }
+
+    .lost-cover p {
+      margin: 7px 0 0;
+      color: var(--muted-light);
+      font-size: 12px;
+    }
+
+    .stage-caption {
+      position: absolute;
+      z-index: 6;
+      right: 18px;
+      bottom: 18px;
+      left: 18px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+      pointer-events: none;
+    }
+
+    .stage-intent {
+      max-width: min(440px, 75%);
+      padding: 13px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 14px;
+      background: rgba(13, 14, 11, 0.76);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(12px);
+    }
+
+    .stage-intent small {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--lime);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .stage-intent strong {
+      display: block;
+      font-size: clamp(14px, 1.7vw, 20px);
+      font-weight: 750;
+      letter-spacing: -0.025em;
+    }
+
+    .stage-time {
+      color: rgba(255, 255, 255, 0.58);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+    }
+
+    .demo-panel {
+      display: flex;
+      flex-direction: column;
+      padding: 22px;
+      background: #20211c;
+    }
+
+    .demo-panel-head {
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line-light);
+    }
+
+    .demo-panel-head .label {
+      margin: 0 0 7px;
+      color: var(--lime);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .demo-panel-head h3 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -0.045em;
+      line-height: 1.1;
+    }
+
+    .demo-panel-head p {
+      min-height: 42px;
+      margin: 9px 0 0;
+      color: var(--muted-light);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .control-block {
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line-light);
+    }
+
+    .control-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      color: rgba(255, 255, 255, 0.52);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .control-label output {
+      color: var(--paper);
+      font-size: 9px;
+    }
+
+    .mode-switch {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      padding: 4px;
+      border-radius: 12px;
+      background: #141510;
+    }
+
+    .mode-button {
+      min-height: 35px;
+      border: 0;
+      border-radius: 9px;
+      cursor: pointer;
+      color: #8c8e83;
+      background: transparent;
+      font-size: 10px;
+      font-weight: 700;
+      transition: color 150ms ease, background 150ms ease;
+    }
+
+    .mode-button:hover {
+      color: var(--paper);
+    }
+
+    .mode-button.active {
+      color: var(--ink);
+      background: var(--lime);
+    }
+
+    .range {
+      width: 100%;
+      height: 4px;
+      margin: 9px 0 3px;
+      border-radius: 999px;
+      appearance: none;
+      cursor: pointer;
+      background: linear-gradient(90deg, var(--lime), rgba(255, 255, 255, 0.16));
+    }
+
+    .range::-webkit-slider-thumb {
+      width: 18px;
+      height: 18px;
+      border: 3px solid #20211c;
+      border-radius: 50%;
+      appearance: none;
+      background: var(--lime);
+      box-shadow: 0 0 0 1px var(--lime);
+    }
+
+    .range::-moz-range-thumb {
+      width: 13px;
+      height: 13px;
+      border: 3px solid #20211c;
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 0 1px var(--lime);
+    }
+
+    .range-scale {
+      display: flex;
+      justify-content: space-between;
+      color: #696b62;
+      font-family: var(--mono);
+      font-size: 8px;
+    }
+
+    .panel-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      padding: 18px 0;
+    }
+
+    .control-button {
+      min-height: 40px;
+      border: 1px solid var(--line-light);
+      border-radius: 10px;
+      cursor: pointer;
+      color: var(--paper);
+      background: rgba(255, 255, 255, 0.035);
+      font-size: 10px;
+      font-weight: 700;
+      transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+    }
+
+    .control-button:hover {
+      border-color: rgba(255, 255, 255, 0.28);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .control-button:active {
+      transform: translateY(1px);
+    }
+
+    .control-button.primary {
+      grid-column: 1 / -1;
+      color: var(--ink);
+      border-color: var(--lime);
+      background: var(--lime);
+    }
+
+    .control-button.primary:hover {
+      background: #d8ff8b;
+    }
+
+    .control-button:disabled {
+      cursor: wait;
+      opacity: 0.55;
+    }
+
+    .event-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 1px 0 10px;
+      color: rgba(255, 255, 255, 0.48);
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .event-head b {
+      color: var(--lime);
+      font-size: 9px;
+    }
+
+    .event-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .event-empty {
+      padding: 14px;
+      border: 1px dashed rgba(255, 255, 255, 0.14);
+      border-radius: 11px;
+      color: #6f7168;
+      text-align: center;
+      font-size: 10px;
+    }
+
+    .event-item {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid rgba(201, 255, 93, 0.2);
+      border-radius: 11px;
+      background: rgba(201, 255, 93, 0.055);
+      animation: eventIn 320ms ease both;
+    }
+
+    .event-thumb {
+      position: relative;
+      display: grid;
+      width: 42px;
+      height: 30px;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 7px;
+      color: var(--ink);
+      background: var(--lime);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 900;
+    }
+
+    .event-thumb::before,
+    .event-thumb::after {
+      content: "";
+      position: absolute;
+      border-color: rgba(23, 23, 19, 0.4);
+      border-style: solid;
+    }
+
+    .event-thumb::before {
+      top: 4px;
+      left: 4px;
+      width: 5px;
+      height: 5px;
+      border-width: 1px 0 0 1px;
+    }
+
+    .event-thumb::after {
+      right: 4px;
+      bottom: 4px;
+      width: 5px;
+      height: 5px;
+      border-width: 0 1px 1px 0;
+    }
+
+    .event-copy strong {
+      display: block;
+      color: var(--paper);
+      font-size: 10px;
+      line-height: 1.2;
+    }
+
+    .event-copy span {
+      display: block;
+      margin-top: 3px;
+      color: #81837a;
+      font-size: 8px;
+    }
+
+    .event-time {
+      color: var(--lime);
+      font-family: var(--mono);
+      font-size: 8px;
+    }
+
+    .take-section {
+      background: var(--paper-2);
+    }
+
+    .take-grid {
+      display: grid;
+      grid-template-columns: 0.82fr 1.18fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .take-statement {
+      display: flex;
+      min-height: 480px;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: clamp(28px, 4vw, 48px);
+      border-radius: var(--radius-l);
+      color: var(--paper);
+      background: var(--ink);
+    }
+
+    .take-statement small {
+      color: var(--lime);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .take-statement h3 {
+      max-width: 490px;
+      margin: 28px 0;
+      font-family: var(--serif);
+      font-size: clamp(38px, 5vw, 66px);
+      font-weight: 500;
+      letter-spacing: -0.065em;
+      line-height: 1.03;
+    }
+
+    .take-statement p {
+      max-width: 480px;
+      margin: 0;
+      color: var(--muted-light);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .take-statement .take-mini {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 34px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line-light);
+      color: rgba(255, 255, 255, 0.48);
+      font-family: var(--mono);
+      font-size: 9px;
+    }
+
+    .take-statement .take-mini b {
+      color: var(--lime);
+      font-size: 10px;
+    }
+
+    .take-flow {
+      display: grid;
+      gap: 10px;
+    }
+
+    .take-step {
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      gap: 22px;
+      align-items: center;
+      min-height: 112px;
+      padding: 20px 24px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 253, 247, 0.56);
+    }
+
+    .take-step-index {
+      display: grid;
+      width: 52px;
+      height: 52px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--orange);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .take-step h4 {
+      margin: 0 0 5px;
+      font-size: 17px;
+      letter-spacing: -0.025em;
+    }
+
+    .take-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .take-step code {
+      padding: 7px 9px;
+      border-radius: 8px;
+      color: #53534b;
+      background: rgba(23, 23, 19, 0.055);
+      font-family: var(--mono);
+      font-size: 8px;
+      white-space: nowrap;
+    }
+
+    .compare-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 247, 0.46);
+    }
+
+    .compare-table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+    }
+
+    .compare-table th,
+    .compare-table td {
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .compare-table tr:last-child th,
+    .compare-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .compare-table thead th {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .compare-table thead th:last-child {
+      color: var(--ink);
+      background: var(--lime);
+    }
+
+    .compare-table tbody th {
+      width: 25%;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .compare-table tbody td {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .compare-table tbody td:last-child {
+      color: var(--ink);
+      background: rgba(201, 255, 93, 0.16);
+      font-weight: 620;
+    }
+
+    .tech-section {
+      color: var(--paper);
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        var(--ink);
+      background-size: 64px 64px;
+    }
+
+    .tech-section .section-kicker {
+      color: var(--sky);
+    }
+
+    .tech-section .section-intro {
+      color: var(--muted-light);
+    }
+
+    .tech-map {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .tech-node {
+      position: relative;
+      min-height: 220px;
+      padding: 20px;
+      border: 1px solid var(--line-light);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .tech-node::after {
+      content: "→";
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: -15px;
+      color: var(--sky);
+      font-family: var(--mono);
+      font-size: 17px;
+      transform: translateY(-50%);
+    }
+
+    .tech-node:last-child::after {
+      display: none;
+    }
+
+    .tech-node .node-num {
+      color: var(--sky);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.09em;
+    }
+
+    .tech-node h3 {
+      margin: 34px 0 9px;
+      font-size: 19px;
+      letter-spacing: -0.035em;
+      line-height: 1.25;
+    }
+
+    .tech-node p {
+      margin: 0;
+      color: var(--muted-light);
+      font-size: 11px;
+      line-height: 1.65;
+    }
+
+    .tech-node strong {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 5px 7px;
+      border: 1px solid rgba(128, 222, 213, 0.25);
+      border-radius: 6px;
+      color: var(--sky);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 650;
+    }
+
+    .design-grid {
+      display: grid;
+      grid-template-columns: 0.92fr 1.08fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .design-plate {
+      position: relative;
+      min-height: 620px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-l);
+      background:
+        linear-gradient(rgba(23, 23, 19, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 23, 19, 0.05) 1px, transparent 1px),
+        #e4ded1;
+      background-size: 44px 44px;
+    }
+
+    .design-plate::before {
+      content: "CONCEPT / INDUSTRIAL DESIGN";
+      position: absolute;
+      top: 22px;
+      left: 24px;
+      color: #89877c;
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: 0.11em;
+    }
+
+    .design-plate::after {
+      content: "NOT TO SCALE";
+      position: absolute;
+      right: 24px;
+      bottom: 22px;
+      color: #89877c;
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: 0.11em;
+    }
+
+    .design-views {
+      position: absolute;
+      inset: 80px 28px 56px;
+      width: calc(100% - 56px);
+      height: calc(100% - 136px);
+    }
+
+    .design-notes {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .design-note {
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      gap: 18px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 253, 247, 0.48);
+    }
+
+    .design-note-index {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 12px;
+      color: var(--ink);
+      background: var(--lime);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 850;
+    }
+
+    .design-note h3 {
+      margin: 0 0 6px;
+      font-size: 17px;
+      letter-spacing: -0.025em;
+    }
+
+    .design-note p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .cmf-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .swatch {
+      display: flex;
+      flex: 1;
+      min-height: 48px;
+      align-items: flex-end;
+      padding: 8px;
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.86);
+      font-family: var(--mono);
+      font-size: 7px;
+      letter-spacing: 0.06em;
+    }
+
+    .swatch:nth-child(1) {
+      background: #343630;
+    }
+
+    .swatch:nth-child(2) {
+      color: var(--ink);
+      background: #a5a79d;
+    }
+
+    .swatch:nth-child(3) {
+      color: var(--ink);
+      background: var(--lime);
+    }
+
+    .scope-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .scope-card {
+      min-height: 365px;
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 247, 0.46);
+    }
+
+    .scope-card.priority {
+      color: var(--paper);
+      background: var(--ink);
+    }
+
+    .scope-card .scope-label {
+      display: inline-flex;
+      min-height: 25px;
+      align-items: center;
+      padding: 0 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--orange);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.09em;
+    }
+
+    .priority .scope-label {
+      color: var(--lime);
+      border-color: rgba(201, 255, 93, 0.3);
+    }
+
+    .scope-card h3 {
+      margin: 26px 0 22px;
+      font-family: var(--serif);
+      font-size: 31px;
+      font-weight: 500;
+      letter-spacing: -0.045em;
+    }
+
+    .scope-card ul {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .scope-card li {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .scope-card li::before {
+      content: "—";
+      color: var(--orange);
+      font-family: var(--mono);
+    }
+
+    .priority li {
+      color: #b3b4a8;
+    }
+
+    .priority li::before {
+      content: "↗";
+      color: var(--lime);
+    }
+
+    .demo-story {
+      overflow: hidden;
+      border-radius: var(--radius-l);
+      color: var(--paper);
+      background: var(--ink);
+    }
+
+    .story-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 28px 30px;
+      border-bottom: 1px solid var(--line-light);
+    }
+
+    .story-head h3 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(28px, 3.6vw, 45px);
+      font-weight: 500;
+      letter-spacing: -0.05em;
+    }
+
+    .story-head span {
+      color: var(--lime);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+
+    .story-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .story-frame {
+      position: relative;
+      min-height: 300px;
+      padding: 26px;
+      border-right: 1px solid var(--line-light);
+    }
+
+    .story-frame:last-child {
+      border-right: 0;
+    }
+
+    .story-frame::before {
+      content: "";
+      position: absolute;
+      top: 31px;
+      right: 26px;
+      width: 9px;
+      height: 9px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+    }
+
+    .story-frame.active::before {
+      border-color: var(--lime);
+      background: var(--lime);
+      box-shadow: 0 0 0 5px rgba(201, 255, 93, 0.08);
+    }
+
+    .story-time {
+      color: var(--lime);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+    }
+
+    .story-frame h4 {
+      max-width: 220px;
+      margin: 82px 0 10px;
+      font-size: 19px;
+      letter-spacing: -0.03em;
+      line-height: 1.3;
+    }
+
+    .story-frame p {
+      max-width: 230px;
+      margin: 0;
+      color: var(--muted-light);
+      font-size: 11px;
+      line-height: 1.65;
+    }
+
+    .validation-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 22px;
+    }
+
+    .validation-intro {
+      padding: clamp(28px, 4vw, 46px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-l);
+      background: rgba(255, 253, 247, 0.5);
+    }
+
+    .validation-intro small {
+      color: var(--orange);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+    }
+
+    .validation-intro h3 {
+      max-width: 540px;
+      margin: 22px 0;
+      font-family: var(--serif);
+      font-size: clamp(35px, 4.4vw, 58px);
+      font-weight: 500;
+      letter-spacing: -0.055em;
+      line-height: 1.05;
+    }
+
+    .validation-intro p {
+      max-width: 540px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .validation-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 30px;
+      padding: 9px 11px;
+      border: 1px solid rgba(255, 104, 71, 0.32);
+      border-radius: 999px;
+      color: #9e4d39;
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 750;
+      letter-spacing: 0.06em;
+    }
+
+    .validation-status::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--orange);
+    }
+
+    .metric-list {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-l);
+      background: rgba(255, 253, 247, 0.48);
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: 1fr 0.9fr auto;
+      gap: 20px;
+      align-items: center;
+      padding: 22px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .metric-row:last-child {
+      border-bottom: 0;
+    }
+
+    .metric-row strong {
+      font-size: 14px;
+    }
+
+    .metric-row span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .metric-row b {
+      padding: 5px 8px;
+      border-radius: 6px;
+      color: #8d533f;
+      background: rgba(255, 104, 71, 0.1);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .closing {
+      padding: 24px 0 72px;
+    }
+
+    .closing-card {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(38px, 7vw, 88px);
+      border-radius: 40px;
+      color: var(--paper);
+      background:
+        radial-gradient(circle at 89% 10%, rgba(201, 255, 93, 0.2), transparent 22rem),
+        var(--ink);
+    }
+
+    .closing-card::after {
+      content: "FRAME";
+      position: absolute;
+      right: -0.04em;
+      bottom: -0.2em;
+      color: rgba(255, 255, 255, 0.035);
+      font-family: var(--serif);
+      font-size: clamp(130px, 25vw, 370px);
+      font-weight: 700;
+      letter-spacing: -0.09em;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .closing-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .closing-card small {
+      color: var(--lime);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+    }
+
+    .closing-card h2 {
+      max-width: 960px;
+      margin: 26px 0;
+      font-family: var(--serif);
+      font-size: clamp(43px, 7.2vw, 98px);
+      font-weight: 500;
+      letter-spacing: -0.07em;
+      line-height: 0.98;
+    }
+
+    .closing-card h2 em {
+      color: var(--lime);
+      font-style: normal;
+    }
+
+    .closing-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 30px;
+      margin-top: 52px;
+    }
+
+    .closing-bottom p {
+      max-width: 590px;
+      margin: 0;
+      color: var(--muted-light);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .closing-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      justify-content: flex-end;
+    }
+
+    .closing-actions a {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      padding: 0 16px;
+      border: 1px solid var(--line-light);
+      border-radius: 999px;
+      color: var(--paper);
+      font-size: 10px;
+      font-weight: 700;
+      transition: border-color 160ms ease, background 160ms ease;
+    }
+
+    .closing-actions a:hover {
+      border-color: rgba(255, 255, 255, 0.32);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .closing-actions a:first-child {
+      color: var(--ink);
+      border-color: var(--lime);
+      background: var(--lime);
+    }
+
+    .site-footer {
+      border-top: 1px solid var(--line);
+    }
+
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 30px;
+      align-items: center;
+      padding: 30px 0 42px;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      font-weight: 760;
+    }
+
+    .footer-note {
+      max-width: 600px;
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.6;
+    }
+
+    .footer-meta {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 9px;
+      line-height: 1.7;
+      text-align: right;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @keyframes statusPulse {
+      0%,
+      100% {
+        opacity: 0.55;
+        transform: scale(0.92);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.08);
+      }
+    }
+
+    @keyframes marquee {
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    @keyframes demonstration {
+      0%,
+      100% {
+        transform: translateY(0) scaleY(1);
+      }
+      48% {
+        transform: translateY(38px) scaleY(0.86);
+      }
+    }
+
+    @keyframes armLift {
+      0%,
+      100% {
+        transform: rotate(0);
+      }
+      48% {
+        transform: rotate(-72deg);
+      }
+    }
+
+    @keyframes armAnswer {
+      0%,
+      100% {
+        transform: rotate(0);
+      }
+      48% {
+        transform: rotate(52deg);
+      }
+    }
+
+    @keyframes eventIn {
+      from {
+        opacity: 0;
+        transform: translateY(7px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 1080px) {
+      :root {
+        --shell: min(100% - 36px, 920px);
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        min-height: auto;
+        grid-template-columns: 1fr;
+        gap: 54px;
+        padding-top: 124px;
+      }
+
+      .hero-copy {
+        max-width: 780px;
+      }
+
+      .hero h1 {
+        max-width: 780px;
+      }
+
+      .hero-art {
+        min-height: 600px;
+      }
+
+      .section-head {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .problem-layout,
+      .take-grid,
+      .design-grid,
+      .validation-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .problem-quote,
+      .take-statement {
+        min-height: 410px;
+      }
+
+      .director-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .demo-stage {
+        border-right: 0;
+        border-bottom: 1px solid var(--line-light);
+      }
+
+      .demo-panel {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 24px;
+      }
+
+      .demo-panel-head,
+      .event-area {
+        grid-column: 1 / -1;
+      }
+
+      .event-area {
+        padding-top: 16px;
+      }
+
+      .tech-map {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .tech-node:nth-child(3)::after {
+        display: none;
+      }
+
+      .tech-node:nth-child(4),
+      .tech-node:nth-child(5) {
+        margin-top: 8px;
+      }
+
+      .design-plate {
+        min-height: 560px;
+      }
+
+      .scope-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .scope-card:last-child {
+        grid-column: 1 / -1;
+        min-height: auto;
+      }
+
+      .story-strip {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .story-frame:nth-child(2) {
+        border-right: 0;
+      }
+
+      .story-frame:nth-child(-n + 2) {
+        border-bottom: 1px solid var(--line-light);
+      }
+    }
+
+    @media (max-width: 700px) {
+      :root {
+        --shell: calc(100% - 28px);
+        --radius: 21px;
+        --radius-l: 26px;
+      }
+
+      .nav {
+        min-height: 70px;
+      }
+
+      .brand {
+        font-size: 14px;
+      }
+
+      .brand-mark {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+      }
+
+      .nav-cta {
+        min-height: 38px;
+        padding: 0 13px;
+        font-size: 10px;
+      }
+
+      .hero {
+        gap: 34px;
+        padding: 104px 0 42px;
+      }
+
+      .eyebrow {
+        margin-bottom: 17px;
+        font-size: 9px;
+      }
+
+      .hero h1 {
+        font-size: clamp(49px, 15vw, 75px);
+        line-height: 0.96;
+      }
+
+      .hero h1 em {
+        white-space: normal;
+      }
+
+      .hero-lead {
+        margin-top: 22px;
+        font-size: 14px;
+        line-height: 1.75;
+      }
+
+      .hero-actions {
+        margin-top: 25px;
+      }
+
+      .button {
+        min-height: 46px;
+        padding: 0 16px;
+        font-size: 11px;
+      }
+
+      .hero-questions {
+        grid-template-columns: 1fr;
+        margin-top: 27px;
+      }
+
+      .hero-question {
+        display: grid;
+        min-height: auto;
+        grid-template-columns: 36px 1fr;
+        gap: 8px;
+        align-items: center;
+        padding: 12px 14px;
+      }
+
+      .hero-question span {
+        margin: 0;
+      }
+
+      .hero-art {
+        min-height: 470px;
+        border-radius: 26px;
+      }
+
+      .product-svg {
+        right: -8%;
+        bottom: -2%;
+        width: 116%;
+      }
+
+      .art-label {
+        top: 18px;
+        left: 18px;
+        font-size: 8px;
+      }
+
+      .art-status {
+        top: 44px;
+        right: 16px;
+        max-width: 155px;
+        font-size: 7px;
+      }
+
+      .take-float {
+        bottom: 18px;
+        left: 16px;
+        width: calc(100% - 32px);
+      }
+
+      .marquee-group {
+        gap: 19px;
+        padding: 13px 10px;
+        font-size: 8px;
+      }
+
+      .section {
+        padding: 78px 0;
+      }
+
+      .section-head {
+        margin-bottom: 34px;
+      }
+
+      .section h2 {
+        font-size: clamp(36px, 11vw, 53px);
+      }
+
+      .section-intro {
+        font-size: 14px;
+      }
+
+      .problem-quote {
+        min-height: 355px;
+        padding: 26px;
+      }
+
+      .problem-quote .quote-mark {
+        font-size: 72px;
+      }
+
+      .problem-quote blockquote {
+        font-size: 31px;
+      }
+
+      .problem-quote p {
+        margin-top: 22px;
+        font-size: 12px;
+      }
+
+      .problem-item {
+        grid-template-columns: 48px 1fr;
+        gap: 14px;
+        padding: 18px;
+      }
+
+      .problem-index {
+        width: 42px;
+        height: 42px;
+      }
+
+      .problem-item h3 {
+        font-size: 16px;
+      }
+
+      .director-shell {
+        border-radius: 24px;
+      }
+
+      .demo-stage {
+        min-height: 480px;
+      }
+
+      .stage-caption {
+        display: block;
+      }
+
+      .stage-intent {
+        max-width: 100%;
+      }
+
+      .stage-time {
+        display: block;
+        margin-top: 8px;
+        text-align: right;
+      }
+
+      .demo-panel {
+        display: block;
+        padding: 18px;
+      }
+
+      .demo-panel-head {
+        padding-bottom: 16px;
+      }
+
+      .demo-panel-head p {
+        min-height: auto;
+      }
+
+      .demo-stage[data-mode="detail"] {
+        --focus-x: 37%;
+        --focus-w: 36%;
+      }
+
+      .take-statement {
+        min-height: 390px;
+        padding: 28px;
+      }
+
+      .take-statement h3 {
+        font-size: 40px;
+      }
+
+      .take-step {
+        grid-template-columns: 48px 1fr;
+        gap: 14px;
+        padding: 17px;
+      }
+
+      .take-step-index {
+        width: 42px;
+        height: 42px;
+      }
+
+      .take-step code {
+        display: none;
+      }
+
+      .tech-map {
+        grid-template-columns: 1fr;
+      }
+
+      .tech-node {
+        min-height: 172px;
+      }
+
+      .tech-node::after {
+        top: auto;
+        right: 50%;
+        bottom: -17px;
+        transform: translateX(50%) rotate(90deg);
+      }
+
+      .tech-node:nth-child(3)::after {
+        display: block;
+      }
+
+      .tech-node:nth-child(4),
+      .tech-node:nth-child(5) {
+        margin-top: 0;
+      }
+
+      .tech-node:last-child::after {
+        display: none;
+      }
+
+      .tech-node h3 {
+        margin-top: 22px;
+      }
+
+      .design-plate {
+        min-height: 440px;
+      }
+
+      .design-views {
+        inset: 72px 12px 46px;
+        width: calc(100% - 24px);
+        height: calc(100% - 118px);
+      }
+
+      .design-note {
+        grid-template-columns: 42px 1fr;
+        gap: 13px;
+        padding: 17px;
+      }
+
+      .design-note-index {
+        width: 36px;
+        height: 36px;
+      }
+
+      .scope-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .scope-card,
+      .scope-card:last-child {
+        grid-column: auto;
+        min-height: auto;
+      }
+
+      .story-head {
+        display: block;
+        padding: 22px;
+      }
+
+      .story-head span {
+        display: block;
+        margin-top: 9px;
+      }
+
+      .story-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .story-frame {
+        min-height: 220px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line-light);
+      }
+
+      .story-frame:nth-child(-n + 2) {
+        border-bottom: 1px solid var(--line-light);
+      }
+
+      .story-frame:last-child {
+        border-bottom: 0;
+      }
+
+      .story-frame h4 {
+        margin-top: 44px;
+      }
+
+      .validation-intro {
+        padding: 27px;
+      }
+
+      .validation-intro h3 {
+        font-size: 38px;
+      }
+
+      .metric-row {
+        grid-template-columns: 1fr auto;
+        gap: 7px 14px;
+        padding: 18px;
+      }
+
+      .metric-row span {
+        grid-column: 1 / -1;
+        grid-row: 2;
+      }
+
+      .closing {
+        padding-top: 0;
+      }
+
+      .closing-card {
+        border-radius: 28px;
+      }
+
+      .closing-card h2 {
+        font-size: clamp(43px, 13vw, 68px);
+      }
+
+      .closing-bottom {
+        display: block;
+        margin-top: 34px;
+      }
+
+      .closing-actions {
+        justify-content: flex-start;
+        margin-top: 24px;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-meta {
+        text-align: left;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header" id="siteHeader">
+    <div class="shell nav">
+      <a class="brand" href="#top" aria-label="Frame 首页">
+        <span class="brand-mark" aria-hidden="true">F</span>
+        <span>
+          Frame
+          <small>Autonomous camera companion</small>
+        </span>
+      </a>
+      <nav class="nav-links" aria-label="主导航">
+        <a href="#problem">为什么</a>
+        <a href="#demo">导演模式</a>
+        <a href="#take">Take 机制</a>
+        <a href="#tech">技术链路</a>
+        <a href="#validation">验证</a>
+      </nav>
+      <a class="nav-cta" href="#demo">20 秒看懂 <span>↘</span></a>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="shell hero">
+      <div class="hero-copy">
+        <p class="eyebrow">DDC 2026 · 自主摄影机器人概念</p>
+        <h1>
+          <span>它不只追着</span>
+          <span><em>你转。</em></span>
+        </h1>
+        <p class="hero-lead">
+          Frame 会根据你正在做什么，主动决定<strong>何时值得记录、保留多大画幅、什么时候把控制权交还给你</strong>。它想在练习结束时递给你的，不是一个塞满废片的相册，而是刚刚那一次。
+        </p>
+        <div class="hero-actions">
+          <a class="button button-dark" href="#demo">进入导演模式 <span class="button-arrow">↗</span></a>
+          <a class="button button-light" href="#tech">查看如何实现 <span class="button-arrow">↓</span></a>
+        </div>
+        <div class="hero-questions" aria-label="Frame 持续回答的三个问题">
+          <div class="hero-question">
+            <span>01 / SEE</span>
+            <strong>我现在被拍到了吗？</strong>
+          </div>
+          <div class="hero-question">
+            <span>02 / THINK</span>
+            <strong>机器认为我正在做什么？</strong>
+          </div>
+          <div class="hero-question">
+            <span>03 / KEEP</span>
+            <strong>它准备保留哪一段？</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-art" id="heroArt">
+        <div class="art-label">Capture system / online</div>
+        <div class="art-status"><b>LOCKED</b> · 1 PERSON · FULL BODY</div>
+        <svg class="product-svg" viewBox="0 0 760 700" role="img" aria-label="Frame 自主摄影机器人概念产品图">
+          <defs>
+            <linearGradient id="metalHead" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#5d5f56"/>
+              <stop offset=".5" stop-color="#34362f"/>
+              <stop offset="1" stop-color="#24251f"/>
+            </linearGradient>
+            <linearGradient id="baseTop" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#484a42"/>
+              <stop offset="1" stop-color="#282a24"/>
+            </linearGradient>
+            <radialGradient id="lensGlass" cx=".35" cy=".28" r=".78">
+              <stop offset="0" stop-color="#7f9d99"/>
+              <stop offset=".28" stop-color="#273b3e"/>
+              <stop offset=".7" stop-color="#0b1112"/>
+              <stop offset="1" stop-color="#020303"/>
+            </radialGradient>
+            <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="18"/>
+            </filter>
+          </defs>
+          <ellipse cx="382" cy="623" rx="240" ry="49" fill="#000" opacity=".5" filter="url(#softShadow)"/>
+          <path d="M259 446h246l36 77c7 15-4 31-20 31H243c-16 0-27-16-20-31z" fill="#22231e"/>
+          <rect x="196" y="504" width="372" height="116" rx="40" fill="#1c1d18" stroke="#55574e" stroke-width="2"/>
+          <rect x="214" y="518" width="336" height="65" rx="28" fill="url(#baseTop)" stroke="#686a60" stroke-width="1"/>
+          <path d="M345 521h80l-9 34h-62z" fill="#151611" opacity=".75"/>
+          <circle cx="243" cy="551" r="5" fill="#c9ff5d"/>
+          <circle cx="258" cy="551" r="5" fill="#51534a"/>
+          <rect x="443" y="546" width="78" height="10" rx="5" fill="#11120e"/>
+          <path d="M361 450l20-146h52l20 146z" fill="#25261f"/>
+          <path d="M369 448l14-137h30l17 137z" fill="#363830"/>
+          <path d="M389 309h54" stroke="#77796d" stroke-width="4" stroke-linecap="round"/>
+          <g class="camera-head">
+            <rect x="241" y="134" width="297" height="201" rx="68" fill="url(#metalHead)" stroke="#6c6e63" stroke-width="2"/>
+            <rect x="257" y="151" width="265" height="166" rx="58" fill="#1e1f1a" stroke="#41433b" stroke-width="1"/>
+            <path d="M280 142c30-23 68-31 105-30" fill="none" stroke="#8a8c80" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+            <circle cx="470" cy="235" r="82" fill="#2f312a" stroke="#5b5d53" stroke-width="2"/>
+            <circle cx="470" cy="235" r="71" fill="#121310"/>
+            <circle cx="470" cy="235" r="57" fill="url(#lensGlass)" stroke="#5e7a78" stroke-width="4"/>
+            <circle cx="470" cy="235" r="31" fill="#061011" stroke="#213637" stroke-width="2"/>
+            <ellipse cx="450" cy="213" rx="18" ry="10" fill="#a3d8d2" opacity=".22" transform="rotate(-32 450 213)"/>
+            <circle cx="286" cy="222" r="8" class="status-light" fill="#c9ff5d"/>
+            <rect x="275" y="180" width="89" height="4" rx="2" fill="#6e7065" opacity=".6"/>
+            <rect x="275" y="192" width="52" height="4" rx="2" fill="#6e7065" opacity=".35"/>
+          </g>
+          <path d="M478 323l28 39" stroke="#151611" stroke-width="18" stroke-linecap="round"/>
+          <circle cx="507" cy="365" r="12" fill="#4b4d44" stroke="#6f7165"/>
+          <path d="M219 622h328" stroke="#5a5c52" stroke-width="1" opacity=".5"/>
+          <path d="M254 636h258" stroke="#5a5c52" stroke-width="1" opacity=".25"/>
+        </svg>
+        <div class="take-float">
+          <div class="take-float-top">
+            <span>TAKE 01 SAVED</span>
+            <time>00:04.2</time>
+          </div>
+          <strong>已保留一次完整动作</strong>
+          <div class="take-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <div class="marquee-group">
+          <span>Lock the subject</span><i></i>
+          <span>Read the motion</span><i></i>
+          <span>Keep the moment</span><i></i>
+          <span>Return control</span><i></i>
+          <span>Less footage / better takes</span><i></i>
+        </div>
+        <div class="marquee-group">
+          <span>Lock the subject</span><i></i>
+          <span>Read the motion</span><i></i>
+          <span>Keep the moment</span><i></i>
+          <span>Return control</span><i></i>
+          <span>Less footage / better takes</span><i></i>
+        </div>
+      </div>
+    </div>
+
+    <section class="section" id="problem">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">01 / The real gap</p>
+            <h2>不是没人拍。<br>是没人替你判断<em>哪一次值得留。</em></h2>
+          </div>
+          <p class="section-intro">
+            独自练习时，创作者同时扮演表演者、摄影指导和剪辑师。设备能看见你，却不知道你刚刚是在走位、准备，还是完成了一次真正想回看的动作。
+          </p>
+        </div>
+        <div class="problem-layout">
+          <article class="problem-quote">
+            <div class="quote-mark">“</div>
+            <blockquote>我希望练完抬头时，机器已经把“刚刚那一次”找好了。</blockquote>
+            <p>这句话定义了 Frame 的产品边界：不是替用户拍完所有东西，而是减少“为了找到几秒钟，先保存几十分钟”的负担。</p>
+          </article>
+          <div class="problem-list">
+            <article class="problem-item">
+              <div class="problem-index">01</div>
+              <div>
+                <h3>固定机位：一动就出画</h3>
+                <p>三脚架稳定、便宜，但只适合在画框里表演。用户不断回到镜头前检查位置，练习本身被打断。</p>
+              </div>
+            </article>
+            <article class="problem-item">
+              <div class="problem-index">02</div>
+              <div>
+                <h3>自动跟拍：一直居中，却一直录像</h3>
+                <p>普通云台解决了主体位置，却没有理解动作完成，也没有回答“什么时候应该留下一个片段”。</p>
+              </div>
+            </article>
+            <article class="problem-item">
+              <div class="problem-index">03</div>
+              <div>
+                <h3>人工拍摄：理解意图，但成本很高</h3>
+                <p>第二个人知道该拍什么，却需要全程在旁边。对反复练习的个人创作者，协作成本比设备成本更高。</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section demo-section" id="demo">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">02 / Director mode</p>
+            <h2>拖动主体，<br>看机器如何<em>做决定。</em></h2>
+          </div>
+          <p class="section-intro">
+            这里没有摄像头权限，也没有真实模型。你可以用下方控制完成一次逻辑模拟：改变主体位置、切换画幅、生成 Take，再按下接管。
+          </p>
+        </div>
+
+        <div class="director-shell">
+          <div class="demo-stage" id="demoStage" data-mode="full">
+            <div class="stage-topbar">
+              <span class="stage-rec">LOCAL VISION / SIMULATED</span>
+              <span class="stage-mode" id="stageModeLabel">FULL BODY · 01</span>
+            </div>
+
+            <svg class="demo-svg" viewBox="0 0 1000 640" aria-hidden="true">
+              <defs>
+                <linearGradient id="floorFade" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#c9ff5d" stop-opacity="0"/>
+                  <stop offset="1" stop-color="#c9ff5d" stop-opacity=".11"/>
+                </linearGradient>
+                <filter id="demoGlow">
+                  <feGaussianBlur stdDeviation="7"/>
+                </filter>
+              </defs>
+              <ellipse cx="500" cy="556" rx="410" ry="42" fill="#000" opacity=".28" filter="url(#demoGlow)"/>
+              <path d="M96 505H904" stroke="#5d6155" stroke-width="1" opacity=".55"/>
+              <path d="M145 529H855" stroke="#4a4d43" stroke-width="1" opacity=".42"/>
+              <path d="M194 553H806" stroke="#3e4138" stroke-width="1" opacity=".32"/>
+              <rect x="0" y="505" width="1000" height="135" fill="url(#floorFade)"/>
+              <g id="personGroup" transform="translate(485 0)">
+                <g class="person-body">
+                  <circle cx="0" cy="243" r="31" fill="#e7d9c5" stroke="#fffdf7" stroke-width="3"/>
+                  <path d="M0 279V399" stroke="#fffdf7" stroke-width="16" stroke-linecap="round"/>
+                  <path class="person-arm-left" d="M-2 303L-72 366" stroke="#fffdf7" stroke-width="13" stroke-linecap="round"/>
+                  <path class="person-arm-right" d="M2 303L78 365" stroke="#fffdf7" stroke-width="13" stroke-linecap="round"/>
+                  <path d="M-1 397L-55 506" stroke="#fffdf7" stroke-width="18" stroke-linecap="round"/>
+                  <path d="M2 397L63 506" stroke="#fffdf7" stroke-width="18" stroke-linecap="round"/>
+                  <path d="M-2 306L-56 390" stroke="#c9ff5d" stroke-width="4" stroke-linecap="round" opacity=".85"/>
+                  <path d="M2 306L58 390" stroke="#c9ff5d" stroke-width="4" stroke-linecap="round" opacity=".85"/>
+                  <circle cx="-57" cy="508" r="10" fill="#c9ff5d"/>
+                  <circle cx="65" cy="508" r="10" fill="#c9ff5d"/>
+                </g>
+              </g>
+            </svg>
+
+            <div class="focus-frame">
+              <span class="focus-tag" id="focusTag">FULL BODY</span>
+            </div>
+            <div class="lost-cover">
+              <div class="lost-cover-inner">
+                <small>TRACKING PAUSED</small>
+                <strong>主体未锁定</strong>
+                <p>请回到取景范围，或按下接管手动调整。</p>
+              </div>
+            </div>
+            <div class="stage-caption">
+              <div class="stage-intent">
+                <small>Current intent</small>
+                <strong id="stageIntent">已锁定 · 保持全身构图</strong>
+              </div>
+              <span class="stage-time" id="stageDirection">主体居中</span>
+            </div>
+          </div>
+
+          <aside class="demo-panel" aria-label="导演模式控制面板">
+            <div class="demo-panel-head">
+              <p class="label">Simulation control</p>
+              <h3 id="stateTitle">准备好了</h3>
+              <p id="stateDetail" aria-live="polite">移动主体或完成一次动作，查看 Frame 的状态变化。</p>
+            </div>
+
+            <div class="control-block">
+              <div class="control-label">
+                <span>拍摄画幅</span>
+                <output id="frameValue">全身</output>
+              </div>
+              <div class="mode-switch" role="group" aria-label="选择拍摄画幅">
+                <button class="mode-button active" type="button" data-mode="full" aria-pressed="true">全身</button>
+                <button class="mode-button" type="button" data-mode="half" aria-pressed="false">半身</button>
+                <button class="mode-button" type="button" data-mode="detail" aria-pressed="false">细节</button>
+              </div>
+            </div>
+
+            <div class="control-block">
+              <label class="control-label" for="subjectRange">
+                <span>主体位置</span>
+                <output id="positionValue">居中</output>
+              </label>
+              <input class="range" id="subjectRange" type="range" min="18" max="82" value="50" step="1">
+              <div class="range-scale"><span>LEFT</span><span>SAFE ZONE</span><span>RIGHT</span></div>
+            </div>
+
+            <div class="panel-actions">
+              <button class="control-button primary" id="actionButton" type="button">完成一次动作 ↗</button>
+              <button class="control-button" id="lostButton" type="button" aria-pressed="false">模拟遮挡</button>
+              <button class="control-button" id="pauseButton" type="button" aria-pressed="false">暂停跟随</button>
+            </div>
+
+            <div class="event-area">
+              <div class="event-head"><span>Saved takes</span><b id="takeCount">0</b></div>
+              <div class="event-list" id="eventList">
+                <div class="event-empty" id="eventEmpty">还没有 Take。完成一次动作试试。</div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section take-section" id="take">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">03 / The product object</p>
+            <h2>产品不是一个文件。<br>是一次<em>完整的 Take。</em></h2>
+          </div>
+          <p class="section-intro">
+            “Take”把散乱的视频时间轴变成可理解的动作事件。每个片段都有起势、动作、复位和保留原因，用户不需要先学剪辑才能找到成果。
+          </p>
+        </div>
+
+        <div class="take-grid">
+          <article class="take-statement">
+            <div>
+              <small>Event-based capture</small>
+              <h3>少拍一点。<br>但留下的，<br>正是那一次。</h3>
+              <p>首版不靠复杂语义猜测“美感”，只用可验证的条件判断一次动作是否完整。判断越克制，现场解释越可信。</p>
+            </div>
+            <div class="take-mini">
+              <span>3–5 SEC TARGET</span>
+              <b>1 ACTION → 1 EVENT</b>
+            </div>
+          </article>
+          <div class="take-flow">
+            <article class="take-step">
+              <div class="take-step-index">A</div>
+              <div>
+                <h4>进入动作区间</h4>
+                <p>主体已锁定，运动幅度持续超过阈值，而不是一次抖动。</p>
+              </div>
+              <code>motion > threshold</code>
+            </article>
+            <article class="take-step">
+              <div class="take-step-index">B</div>
+              <div>
+                <h4>保留起势与过程</h4>
+                <p>事件开始前预留约 1–1.5 秒，避免只留下半截动作。</p>
+              </div>
+              <code>pre-roll 1.5s</code>
+            </article>
+            <article class="take-step">
+              <div class="take-step-index">C</div>
+              <div>
+                <h4>确认完整结束</h4>
+                <p>动作回到稳定状态后结束事件，加入短暂结束缓冲与冷却时间。</p>
+              </div>
+              <code>complete + cooldown</code>
+            </article>
+            <article class="take-step">
+              <div class="take-step-index">D</div>
+              <div>
+                <h4>生成可解释回执</h4>
+                <p>保存 Take，同时显示触发原因、时长和可撤销入口。</p>
+              </div>
+              <code>take.saved(reason)</code>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">04 / Why it is different</p>
+            <h2>不是“云台 2.0”。<br>是把<em>记录决策</em>做进产品。</h2>
+          </div>
+          <p class="section-intro">
+            自动跟随是必要基础，但无法单独构成产品差异。Frame 的首版把“画幅意图、动作事件、人类接管”三个决策放在同一条交互链里。
+          </p>
+        </div>
+        <div class="compare-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>比较维度</th>
+                <th>固定机位</th>
+                <th>普通跟拍云台</th>
+                <th>Frame 首版</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>主体移动</th>
+                <td>容易出画</td>
+                <td>持续保持居中</td>
+                <td>保持安全画幅，并显示跟随方向</td>
+              </tr>
+              <tr>
+                <th>记录方式</th>
+                <td>手动开始 / 停止</td>
+                <td>通常连续录像</td>
+                <td>按完整动作生成 3–5 秒 Take</td>
+              </tr>
+              <tr>
+                <th>理解内容</th>
+                <td>不理解</td>
+                <td>理解主体位置</td>
+                <td>理解画面占比、运动区间和事件完成</td>
+              </tr>
+              <tr>
+                <th>用户信任</th>
+                <td>完全可预测</td>
+                <td>自动但原因不透明</td>
+                <td>持续显示当前意图、记录原因与接管状态</td>
+              </tr>
+              <tr>
+                <th>最终结果</th>
+                <td>得到一条视频</td>
+                <td>得到一条跟拍视频</td>
+                <td>得到按动作组织的 Take 候选</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section tech-section" id="tech">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">05 / Local intelligence</p>
+            <h2>每个判断都在<br><em>设备本地完成。</em></h2>
+          </div>
+          <p class="section-intro">
+            RDK X5 同时承担视频取流、视觉推理、状态判断、界面显示与云台控制协同。断网时，核心体验仍应在本地闭环，视频默认不离开设备。
+          </p>
+        </div>
+
+        <div class="tech-map" aria-label="Frame 技术链路">
+          <article class="tech-node">
+            <span class="node-num">01 / INPUT</span>
+            <h3>摄像头</h3>
+            <p>连续取流，记录分辨率、像素格式与时间戳。</p>
+            <strong>USB / MIPI</strong>
+          </article>
+          <article class="tech-node">
+            <span class="node-num">02 / PERCEIVE</span>
+            <h3>看见主体</h3>
+            <p>检测单人、位置、画面占比与关键点置信度。</p>
+            <strong>PERSON / POSE</strong>
+          </article>
+          <article class="tech-node">
+            <span class="node-num">03 / DECIDE</span>
+            <h3>理解状态</h3>
+            <p>判断构图意图、动作区间、Take 触发与主体丢失。</p>
+            <strong>STATE MACHINE</strong>
+          </article>
+          <article class="tech-node">
+            <span class="node-num">04 / ACT</span>
+            <h3>移动与保存</h3>
+            <p>输出 pan/tilt 指令，生成本地短片段事件。</p>
+            <strong>GIMBAL / TAKE</strong>
+          </article>
+          <article class="tech-node">
+            <span class="node-num">05 / EXPLAIN</span>
+            <h3>当场解释</h3>
+            <p>屏幕持续显示主状态、原因、时长与接管入口。</p>
+            <strong>HDMI / UI</strong>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">06 / Product form</p>
+            <h2>三个结构模块，<br>让概念<em>能被现场搭出来。</em></h2>
+          </div>
+          <p class="section-intro">
+            工业设计优先服务固定、散热、接线和可恢复演示。它不是量产效果图，而是一套能指导 3D 打印件、现成云台与桌面支架组合的结构方向。
+          </p>
+        </div>
+
+        <div class="design-grid">
+          <div class="design-plate" aria-label="Frame 概念产品三视图">
+            <svg class="design-views" viewBox="0 0 760 520" role="img" aria-label="Frame 概念产品正视图、侧视图和模块分解图">
+              <g fill="none" stroke="#5b5c53" stroke-width="1.2" opacity=".45">
+                <path d="M30 448H730"/>
+                <path d="M30 122H730"/>
+                <path d="M184 70V468"/>
+                <path d="M578 70V468"/>
+              </g>
+              <g transform="translate(74 126)">
+                <rect x="76" y="248" width="210" height="76" rx="28" fill="#34362f"/>
+                <rect x="90" y="257" width="182" height="40" rx="18" fill="#4c4e45"/>
+                <path d="M145 251l7-83h42l10 83z" fill="#74766b"/>
+                <rect x="66" y="61" width="230" height="142" rx="50" fill="#3b3d35" stroke="#171713" stroke-width="2"/>
+                <circle cx="229" cy="132" r="49" fill="#181915" stroke="#71736a" stroke-width="2"/>
+                <circle cx="229" cy="132" r="36" fill="#0c0d0a" stroke="#a8c7c2" stroke-width="2"/>
+                <circle cx="105" cy="103" r="5" fill="#c9ff5d" stroke="none"/>
+                <path d="M98 83h64" stroke="#84867a" stroke-width="2"/>
+                <text x="9" y="365" fill="#77766c" stroke="none" font-family="monospace" font-size="9">FRONT</text>
+              </g>
+              <g transform="translate(423 106)">
+                <ellipse cx="112" cy="318" rx="122" ry="15" fill="#bdb7a9"/>
+                <rect x="30" y="245" width="170" height="72" rx="28" fill="#4a4c43"/>
+                <path d="M100 246l6-88h30l12 88z" fill="#5e6056"/>
+                <path d="M26 65c0-29 23-52 52-52h108c29 0 52 23 52 52v80c0 29-23 52-52 52H78c-29 0-52-23-52-52z" fill="#393b34" stroke="#171713" stroke-width="2"/>
+                <circle cx="137" cy="105" r="40" fill="#131410" stroke="#8b8d81" stroke-width="2"/>
+                <path d="M126 73l-7-26h26l-8 26" fill="#24251f" stroke="#66685d"/>
+                <text x="22" y="365" fill="#77766c" font-family="monospace" font-size="9">SIDE</text>
+              </g>
+              <path d="M333 222h48" stroke="#ff6847" stroke-width="1.5" stroke-dasharray="5 5"/>
+              <path d="M379 216l8 6-8 6" stroke="#ff6847" stroke-width="1.5" fill="none"/>
+              <g transform="translate(309 56)" font-family="monospace" font-size="8" fill="#77766c">
+                <text x="0" y="0">CAMERA HEAD</text>
+                <text x="0" y="382">BASE + RDK X5</text>
+                <text x="0" y="398">PAN / TILT + I/O</text>
+              </g>
+              <path d="M79 402h176M436 383h206" stroke="#ff6847" stroke-width="1" opacity=".7"/>
+            </svg>
+          </div>
+
+          <div class="design-notes">
+            <article class="design-note">
+              <span class="design-note-index">01</span>
+              <div>
+                <h3>镜头头：用状态表达存在感</h3>
+                <p>偏心镜头环与荧光绿状态灯让“已锁定 / 已记录”在设备本体上也可读。外部可先由 3D 打印壳与现成摄像头组成。</p>
+              </div>
+            </article>
+            <article class="design-note">
+              <span class="design-note-index">02</span>
+              <div>
+                <h3>云台臂：保留手动回正能力</h3>
+                <p>优先保证限位、停止和断电回零。自动运动不是必要条件时，屏幕上的 pan/tilt 指令也能表达相同产品逻辑。</p>
+              </div>
+            </article>
+            <article class="design-note">
+              <span class="design-note-index">03</span>
+              <div>
+                <h3>底座：计算、散热和稳定优先</h3>
+                <p>RDK X5、供电与接口集中到底座，降低头部重量。线材固定、防振脚垫和独立接管键都直接服务现场演示。</p>
+              </div>
+            </article>
+            <article class="design-note">
+              <span class="design-note-index">04</span>
+              <div>
+                <h3>CMF：让机器安静，状态清晰</h3>
+                <p>石墨灰吸收现场反光，半透明镜头环保持设备感，荧光绿只用于“正在工作”的关键状态。</p>
+                <div class="cmf-row" aria-label="概念配色">
+                  <span class="swatch">GRAPHITE</span>
+                  <span class="swatch">SMOKE</span>
+                  <span class="swatch">SIGNAL</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">07 / MVP boundary</p>
+            <h2>先赢下一次完整演示，<br>再扩展<em>更多智能。</em></h2>
+          </div>
+          <p class="section-intro">
+            48 小时内最稀缺的不是新功能，而是可重复的完整链路。产品范围按“现场必须成功、成功后加入、明确不做”三层冻结。
+          </p>
+        </div>
+        <div class="scope-grid">
+          <article class="scope-card priority">
+            <span class="scope-label">P0 / MUST SHIP</span>
+            <h3>现场主链路</h3>
+            <ul>
+              <li>本地摄像头取流</li>
+              <li>单人主体框与位置估计</li>
+              <li>全身 / 半身 / 自动三档构图</li>
+              <li>一次完整 Take 事件与保存</li>
+              <li>主体丢失、接管、暂停状态</li>
+              <li>20 秒脚本连续可复现</li>
+            </ul>
+          </article>
+          <article class="scope-card">
+            <span class="scope-label">P1 / NEXT</span>
+            <h3>稳定后再加</h3>
+            <ul>
+              <li>细节构图与手势区域</li>
+              <li>多个 Take 的事件列表</li>
+              <li>短片段页面预览</li>
+              <li>真实云台回零与急停</li>
+              <li>用实机日志调优事件阈值</li>
+            </ul>
+          </article>
+          <article class="scope-card">
+            <span class="scope-label">NOT NOW</span>
+            <h3>首版明确不做</h3>
+            <ul>
+              <li>多人自动导播</li>
+              <li>电影级自动运镜</li>
+              <li>动作语义分类</li>
+              <li>云端实时理解</li>
+              <li>宣称识别“美感”</li>
+              <li>账号、社交与排行榜</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">08 / 20-second story</p>
+            <h2>一个镜头，<br>让评委看见<em>完整闭环。</em></h2>
+          </div>
+          <p class="section-intro">
+            演示不需要解释所有算法。只要观众能依次看到“锁定、跟随、生成 Take、接管”四种状态，产品的价值就已经成立。
+          </p>
+        </div>
+        <div class="demo-story">
+          <div class="story-head">
+            <h3>20 秒现场演示脚本</h3>
+            <span>ONE SUBJECT / ONE SPACE / ONE ACTION</span>
+          </div>
+          <div class="story-strip">
+            <article class="story-frame active">
+              <span class="story-time">00–04 SEC</span>
+              <h4>“已锁定 1 人”</h4>
+              <p>体验者进入画面左侧，Frame 显示全身安全画幅与主体状态。</p>
+            </article>
+            <article class="story-frame">
+              <span class="story-time">04–08 SEC</span>
+              <h4>“主体偏右，正在跟随”</h4>
+              <p>体验者移动到右侧，屏幕显示方向与 pan/tilt 指令，而不是突然切镜头。</p>
+            </article>
+            <article class="story-frame">
+              <span class="story-time">08–14 SEC</span>
+              <h4>“已生成 Take 01”</h4>
+              <p>完成一次明显动作，Frame 在动作结束后保存短片段并说明触发原因。</p>
+            </article>
+            <article class="story-frame">
+              <span class="story-time">14–20 SEC</span>
+              <h4>“你已接管”</h4>
+              <p>体验者靠近展示手势，切到半身/细节构图；按下接管后自动跟随立即暂停。</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="validation">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">09 / Evidence, not claims</p>
+            <h2>先把目标说清，<br>再把<em>结果交给真机。</em></h2>
+          </div>
+          <p class="section-intro">
+            当前没有 RDK X5 真机成绩，因此页面只展示验证方法。上板后必须记录日期、板卡系统、摄像头、分辨率、模型版本和每一次失败。
+          </p>
+        </div>
+        <div class="validation-grid">
+          <article class="validation-intro">
+            <small>VALIDATION STATE</small>
+            <h3>能解释每一次成功，也能解释每一次失败。</h3>
+            <p>Frame 的验证不以“看起来很智能”为目标。主体锁定、事件触发、误报和恢复都必须能回到日志与测试条件。</p>
+            <span class="validation-status">真机数据待实测</span>
+          </article>
+          <div class="metric-list">
+            <div class="metric-row">
+              <strong>主体跟踪</strong>
+              <span>固定距离左右移动 10 次，至少 8 次持续锁定</span>
+              <b>目标</b>
+            </div>
+            <div class="metric-row">
+              <strong>构图反馈</strong>
+              <span>每种模式切换后 1 秒内出现清晰的画面与文字状态</span>
+              <b>目标</b>
+            </div>
+            <div class="metric-row">
+              <strong>Take 命中</strong>
+              <span>10 次已知动作至少记录 7 次，漏检需能解释</span>
+              <b>目标</b>
+            </div>
+            <div class="metric-row">
+              <strong>误触发</strong>
+              <span>安静走动和整理物品共 10 次，错误 Take 不超过 2 次</span>
+              <b>目标</b>
+            </div>
+            <div class="metric-row">
+              <strong>端到端时延</strong>
+              <span>画面变化到状态/云台指令，未实测前不宣称具体数值</span>
+              <b>待测</b>
+            </div>
+            <div class="metric-row">
+              <strong>演示稳定性</strong>
+              <span>连续 10 轮 20 秒脚本，至少 8 轮完整跑通</span>
+              <b>目标</b>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="closing">
+      <div class="shell">
+        <div class="closing-card">
+          <small>FRAME / THE CAMERA THAT KNOWS WHEN</small>
+          <h2>记录不该是<br><em>一整段等待。</em></h2>
+          <div class="closing-bottom">
+            <p>
+              首版只做一件小事：让独自练习的人，在抬头时看见刚刚完成的那一次。先把这条闭环跑通，再让机器理解更多。
+            </p>
+            <div class="closing-actions">
+              <a href="#demo">再体验一次 ↗</a>
+              <a href="https://gitee.com/Ray_13/ray/blob/main/Frame_%E4%BA%A7%E5%93%81%E4%BA%A4%E4%BB%98/01_%E4%BA%A7%E5%93%81%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md" target="_blank" rel="noreferrer">产品设计方案 ↗</a>
+              <a href="https://gitee.com/Ray_13/ray/tree/main/Frame_%E4%BA%A7%E5%93%81%E4%BA%A4%E4%BB%98" target="_blank" rel="noreferrer">Gitee 仓库 ↗</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-inner">
+      <div>
+        <div class="footer-brand">
+          <span class="brand-mark" aria-hidden="true">F</span>
+          <span>Frame / 自主摄影搭子</span>
+        </div>
+        <p class="footer-note">
+          DDC 2026 产品概念与交互原型。官网中的主体移动、构图和 Take 触发均为前端逻辑模拟，不代表真实视觉模型或 RDK X5 性能。
+        </p>
+      </div>
+      <div class="footer-meta">
+        CONCEPT V2.0 · 2026.11.20<br>
+        LOCAL VISION · HUMAN TAKEOVER
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const header = document.getElementById("siteHeader");
+      const heroArt = document.getElementById("heroArt");
+      const demoStage = document.getElementById("demoStage");
+      const personGroup = document.getElementById("personGroup");
+      const subjectRange = document.getElementById("subjectRange");
+      const positionValue = document.getElementById("positionValue");
+      const stageDirection = document.getElementById("stageDirection");
+      const stageIntent = document.getElementById("stageIntent");
+      const stageModeLabel = document.getElementById("stageModeLabel");
+      const frameValue = document.getElementById("frameValue");
+      const focusTag = document.getElementById("focusTag");
+      const stateTitle = document.getElementById("stateTitle");
+      const stateDetail = document.getElementById("stateDetail");
+      const actionButton = document.getElementById("actionButton");
+      const lostButton = document.getElementById("lostButton");
+      const pauseButton = document.getElementById("pauseButton");
+      const eventList = document.getElementById("eventList");
+      const eventEmpty = document.getElementById("eventEmpty");
+      const takeCount = document.getElementById("takeCount");
+      const modeButtons = [...document.querySelectorAll(".mode-button")];
+
+      const modeMeta = {
+        full: {
+          label: "全身",
+          code: "FULL BODY"
+        },
+        half: {
+          label: "半身",
+          code: "HALF BODY"
+        },
+        detail: {
+          label: "细节",
+          code: "DETAIL"
+        }
+      };
+
+      let currentMode = "full";
+      let currentPosition = 50;
+      let isLost = false;
+      let isPaused = false;
+      let isActing = false;
+      let recordedTakes = 0;
+      let actionTimer = null;
+
+      const updateHeader = () => {
+        header.classList.toggle("scrolled", window.scrollY > 18);
+      };
+
+      const setState = (title, detail, intent) => {
+        stateTitle.textContent = title;
+        stateDetail.textContent = detail;
+        if (intent) stageIntent.textContent = intent;
+      };
+
+      const updatePosition = () => {
+        const position = Number(subjectRange.value);
+        currentPosition = position;
+        const svgX = 105 + position * 7.9;
+        personGroup.setAttribute("transform", `translate(${svgX.toFixed(1)} 0)`);
+        const relativeAngle = ((position - 50) / 32) * 6;
+        heroArt.style.setProperty("--head-rotation", `${relativeAngle.toFixed(1)}deg`);
+
+        let direction = "主体居中";
+        if (position < 41) {
+          direction = "主体偏左 · 请向左转";
+          positionValue.textContent = "偏左";
+        } else if (position > 59) {
+          direction = "主体偏右 · 请向右转";
+          positionValue.textContent = "偏右";
+        } else {
+          positionValue.textContent = "安全区";
+        }
+
+        if (!isLost && !isPaused && !isActing) {
+          stageDirection.textContent = direction;
+          setState(
+            position < 41 || position > 59 ? "正在跟随" : "主体已锁定",
+            position < 41 || position > 59
+              ? `主体离开安全区，Frame 将镜头向${position < 41 ? "左" : "右"}调整。`
+              : `${modeMeta[currentMode].label}构图稳定，可以开始一次动作。`,
+            position < 41 || position > 59
+              ? `跟随中 · ${modeMeta[currentMode].code}`
+              : `已锁定 · 保持${modeMeta[currentMode].label}构图`
+          );
+        }
+      };
+
+      const updateMode = (mode) => {
+        currentMode = mode;
+        demoStage.dataset.mode = mode;
+        modeButtons.forEach((button) => {
+          const active = button.dataset.mode === mode;
+          button.classList.toggle("active", active);
+          button.setAttribute("aria-pressed", String(active));
+        });
+        frameValue.textContent = modeMeta[mode].label;
+        focusTag.textContent = modeMeta[mode].code;
+        stageModeLabel.textContent = `${modeMeta[mode].code} · 01`;
+
+        if (!isLost && !isPaused && !isActing) {
+          setState(
+            `已切换为${modeMeta[mode].label}构图`,
+            mode === "detail"
+              ? "画面收窄到局部区域；真实设备需先验证手部区域是否稳定。"
+              : "画面边界已调整，主体仍保持在安全画幅内。",
+            `已锁定 · 保持${modeMeta[mode].label}构图`
+          );
+        }
+      };
+
+      const addTake = () => {
+        recordedTakes += 1;
+        takeCount.textContent = String(recordedTakes);
+        if (eventEmpty && eventEmpty.isConnected) {
+          eventEmpty.remove();
+        }
+        const item = document.createElement("div");
+        item.className = "event-item";
+        item.innerHTML = `
+          <span class="event-thumb">T${String(recordedTakes).padStart(2, "0")}</span>
+          <span class="event-copy">
+            <strong>完整动作已保留</strong>
+            <span>${modeMeta[currentMode].label}构图 · 4.0 秒</span>
+          </span>
+          <span class="event-time">+1</span>
+        `;
+        eventList.prepend(item);
+
+        const oldItems = eventList.querySelectorAll(".event-item");
+        if (oldItems.length > 3) {
+          oldItems[oldItems.length - 1].remove();
+        }
+      };
+
+      const performAction = () => {
+        if (isActing) return;
+        isActing = true;
+        actionButton.disabled = true;
+        demoStage.classList.add("actioning");
+        setState(
+          "动作进行中",
+          "已进入记录候选。正在等待动作完整结束，不会对一次抖动立即保存。",
+          "记录候选 · 正在确认结束"
+        );
+        stageDirection.textContent = "VALID MOTION";
+
+        window.clearTimeout(actionTimer);
+        actionTimer = window.setTimeout(() => {
+          demoStage.classList.remove("actioning");
+          isActing = false;
+          actionButton.disabled = false;
+          if (isLost || isPaused) {
+            setState(
+              isPaused ? "记录已暂停" : "本次未保存",
+              isPaused ? "你正在接管镜头，自动记录不会继续。" : "主体在动作过程中丢失，本次不生成 Take。",
+              isPaused ? "MANUAL CONTROL" : "NO TAKE · TRACKING LOST"
+            );
+            return;
+          }
+          addTake();
+          setState(
+            `已生成 Take ${String(recordedTakes).padStart(2, "0")}`,
+            "检测到一次完整动作，目标保存 4 秒。可撤销，也可继续下一次练习。",
+            "TAKE SAVED · 4.0 SEC"
+          );
+          stageDirection.textContent = "TAKE SAVED";
+        }, 1050);
+      };
+
+      const toggleLost = () => {
+        isLost = !isLost;
+        demoStage.classList.toggle("is-lost", isLost);
+        lostButton.setAttribute("aria-pressed", String(isLost));
+        lostButton.textContent = isLost ? "恢复主体" : "模拟遮挡";
+
+        if (isLost) {
+          setState(
+            "主体未锁定",
+            "系统停止自信跟随。请回到取景范围，或按下接管手动调整。",
+            "TRACKING LOST · 请回到画幅"
+          );
+          stageDirection.textContent = "未锁定";
+        } else {
+          updatePosition();
+        }
+      };
+
+      const togglePause = () => {
+        isPaused = !isPaused;
+        pauseButton.setAttribute("aria-pressed", String(isPaused));
+        pauseButton.textContent = isPaused ? "恢复自动跟随" : "暂停跟随";
+
+        if (isPaused) {
+          setState(
+            "你已接管",
+            "自动跟随和 Take 触发均已暂停，镜头不会自行移动。",
+            "MANUAL CONTROL · 自动跟随暂停"
+          );
+          stageDirection.textContent = "自动跟随已暂停";
+        } else if (isLost) {
+          setState(
+            "等待主体",
+            "自动跟随已恢复，但主体仍未锁定。",
+            "SEARCHING · 请回到画幅"
+          );
+        } else {
+          updatePosition();
+        }
+      };
+
+      subjectRange.addEventListener("input", updatePosition);
+      modeButtons.forEach((button) => {
+        button.addEventListener("click", () => updateMode(button.dataset.mode));
+      });
+      actionButton.addEventListener("click", performAction);
+      lostButton.addEventListener("click", toggleLost);
+      pauseButton.addEventListener("click", togglePause);
+      window.addEventListener("scroll", updateHeader, { passive: true });
+
+      updateHeader();
+      updatePosition();
+    })();
+  </script>
+</body>
+</html>
