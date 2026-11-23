@@ -231,34 +231,35 @@
   </section>
 
   <section>
-    <h2>下一步（按价值排序）</h2>
+    <h2>开发路线 / Roadmap</h2>
+    <p class="sub">以 FridgeMind 为旗舰，当前进展与下一步验证边界如下。</p>
     <div class="grid">
-      <article class="card" style="border-color:var(--accent2)">
+      <article class="card" style="border-color:var(--accent)">
         <div class="bd">
-          <span class="tag alt">P0</span>
-          <h3>确认学历身份</h3>
-          <p>线上网页写「2025 届本科毕业」，报名语境为在读。确认后统一网页与报名表。</p>
+          <span class="tag">已完成</span>
+          <h3>软件原型与决策逻辑</h3>
+          <p>库存状态机（入库 / 取出 / 撤销 / 临期）、检测站交互原型、本地检测模型接入，6/6 单测通过。</p>
         </div>
       </article>
       <article class="card" style="border-color:var(--accent2)">
         <div class="bd">
-          <span class="tag alt">P0</span>
-          <h3>发布本作品集</h3>
-          <p>把本目录部署为公开网页，让审核人免登录可打开全部 Demo；未经本人确认不发布。</p>
+          <span class="tag alt">进行中</span>
+          <h3>RDK 实机接入</h3>
+          <p>摄像头取流、门磁事件、称重信号与实体确认键的端到端联调，形成“事件 + 视觉 + 重量”的组合感知。</p>
         </div>
       </article>
       <article class="card">
         <div class="bd">
-          <span class="tag">P1</span>
-          <h3>RDK 真机烟测</h3>
-          <p>用团队设备验证 FridgeMind 的门磁 / 摄像头取流 / 称重信号感知闭环，锁定主方向。</p>
+          <span class="tag ev">下一步</span>
+          <h3>精度与结构验证</h3>
+          <p>在真实冰箱光照与遮挡条件下验证识别准确率，完成磁吸外壳打样与跨小时稳定性测试。</p>
         </div>
       </article>
       <article class="card">
         <div class="bd">
-          <span class="tag">P1</span>
-          <h3>补齐味衡公网</h3>
-          <p>味衡 GitHub 仓库为空壳，需补源码或部署 dist/，让产品证据可公开访问。</p>
+          <span class="tag ev">下一步</span>
+          <h3>用户测试</h3>
+          <p>验证“一次确认”是否足够低负担；若记录成本仍高，则回退为更小的单托盘扫描形态。</p>
         </div>
       </article>
     </div>
